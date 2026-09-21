@@ -1,0 +1,5 @@
+$kind: http-request
+description: No auth header needed — this is the public student-number lookup. Only returns data once an exam is PUBLISHED. Replace S001 with a real studentNumber, or use the studentNumber query manually.
+url: "{{baseUrl}}/api/public/results/{{tuitionClassId}}/S001"
+method: GET
+order: 1000

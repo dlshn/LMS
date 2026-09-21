@@ -1,0 +1,28 @@
+$kind: http-request
+url: "{{baseUrl}}/api/exams"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "title": "Term 1 Maths",
+      "subject": "Mathematics",
+      "examDate": "2026-08-20",
+      "description": "Term 1 written exam",
+      "maxMarks": 100
+    }
+auth:
+  type: bearer
+  credentials:
+    token: "{{accessToken}}"
+scripts:
+  - type: afterResponse
+    code: |-
+      if (pm.response.code === 201) {
+        const data = pm.response.json();
+        pm.collectionVariables.set('examId', data.exam.id);
+      }
+    language: text/javascript
+order: 1000

@@ -1,0 +1,60 @@
+$kind: http-request
+url: '{{baseUrl}}/api/marks/{{examId}}/bulk'
+method: POST
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: '{{bulkMarksPayload}}'
+auth:
+  type: bearer
+  credentials:
+    token: '{{accessToken}}'
+order: 2000
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      // ── Assertions ───────────────────────────────────────────────────────────
+      pm.test('Status 200 – bulk marks accepted', () => {
+        pm.response.to.have.status(200);
+      });
+
+      pm.test('Response is JSON', () => {
+        pm.response.to.be.json;
+      });
+
+      const res = pm.response.json();
+
+      pm.test('Response contains a results array', () => {
+        pm.expect(res).to.have.property('results').that.is.an('array');
+      });
+
+      // Recover the payload we sent so we can cross-check
+      const sentPayload = JSON.parse(pm.collectionVariables.get('bulkMarksPayload') || '{"marks":[]}');
+      const maxMarks    = Number(pm.collectionVariables.get('examMaxMarks') || 100);
+
+      pm.test('Every submitted mark is within valid range (0 – maxMarks)', () => {
+        sentPayload.marks.forEach(entry => {
+          pm.expect(entry.marksObtained, `studentId ${entry.studentId} out of range`)
+            .to.be.at.least(0).and.at.most(maxMarks);
+        });
+      });
+
+      pm.test('Result count matches submitted student count', () => {
+        if (res.results) {
+          pm.expect(res.results.length).to.equal(sentPayload.marks.length);
+        }
+      });
+
+      pm.test('Each result has studentId and status', () => {
+        if (res.results) {
+          res.results.forEach(r => {
+            pm.expect(r.studentId, 'studentId missing in result').to.be.a('string').and.not.empty;
+            pm.expect(r.status,    'status missing in result').to.be.a('string').and.not.empty;
+          });
+        }
+      });
+
+      console.log(`[Submit Bulk Marks] exam="${pm.collectionVariables.get('examTitle')}" submitted=${sentPayload.marks.length} student(s)`);

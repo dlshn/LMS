@@ -1,0 +1,30 @@
+$kind: http-request
+url: "{{baseUrl}}/api/students"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "studentNumber": "S001",
+      "fullName": "John Student",
+      "username": "{{studentUsername}}",
+      "password": "{{studentPassword}}",
+      "school": "Example High School",
+      "phone": "0771234567",
+      "parentPhone": "0777654321"
+    }
+auth:
+  type: bearer
+  credentials:
+    token: "{{accessToken}}"
+scripts:
+  - type: afterResponse
+    code: |-
+      if (pm.response.code === 201) {
+        const data = pm.response.json();
+        pm.collectionVariables.set('studentId', data.student.id);
+      }
+    language: text/javascript
+order: 1000

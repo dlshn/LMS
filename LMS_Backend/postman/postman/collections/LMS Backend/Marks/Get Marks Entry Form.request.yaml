@@ -1,0 +1,65 @@
+$kind: http-request
+url: '{{baseUrl}}/api/marks/{{examId}}/form'
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: '{{accessToken}}'
+order: 1000
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      // ── Parse the form response ──────────────────────────────────────────────
+      const res  = pm.response.json();
+      const exam = res.exam;
+
+      // Persist examId so downstream requests always use the live value
+      pm.collectionVariables.set('examId', exam.id);
+      pm.collectionVariables.set('examMaxMarks', exam.maxMarks);
+      pm.collectionVariables.set('examTitle',    exam.title);
+
+      // Build the bulk-marks payload from every student in the form
+      const marksArray = res.students.map(s => ({
+        studentId:     s.studentId,
+        marksObtained: s.marksObtained ?? 0   // use existing value or default to 0
+      }));
+
+      pm.collectionVariables.set('bulkMarksPayload', JSON.stringify({ marks: marksArray }));
+
+      // ── Assertions ───────────────────────────────────────────────────────────
+      pm.test('Status 200 – form loaded', () => {
+        pm.response.to.have.status(200);
+      });
+
+      pm.test('Response has exam object', () => {
+        pm.expect(exam).to.be.an('object');
+        pm.expect(exam.id).to.be.a('string').and.not.empty;
+        pm.expect(exam.maxMarks).to.be.a('number').and.above(0);
+        pm.expect(exam.status).to.equal('PUBLISHED');
+      });
+
+      pm.test('Response has at least one student', () => {
+        pm.expect(res.students).to.be.an('array').with.lengthOf.at.least(1);
+      });
+
+      pm.test('Every student has required fields', () => {
+        res.students.forEach(s => {
+          pm.expect(s.studentId,     'studentId missing').to.be.a('string').and.not.empty;
+          pm.expect(s.studentNumber, 'studentNumber missing').to.be.a('string').and.not.empty;
+          pm.expect(s.fullName,      'fullName missing').to.be.a('string').and.not.empty;
+        });
+      });
+
+      pm.test('All existing marks are within valid range', () => {
+        const max = exam.maxMarks;
+        res.students
+          .filter(s => s.marksObtained != null)
+          .forEach(s => {
+            pm.expect(s.marksObtained, `${s.fullName} marks out of range`)
+              .to.be.at.least(0).and.at.most(max);
+          });
+      });
+
+      console.log(`[Get Marks Entry Form] exam="${exam.title}" maxMarks=${exam.maxMarks} students=${res.students.length}`);
+      console.log('[Get Marks Entry Form] bulkMarksPayload set →', pm.collectionVariables.get('bulkMarksPayload'));

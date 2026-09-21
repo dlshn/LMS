@@ -1,0 +1,13 @@
+$kind: collection
+description: API collection for the LMS (Tuition Class) backend. Import into Postman and set the `baseUrl` collection variable if it differs from the default.
+variables:
+  baseUrl: http://localhost:5000
+  accessToken: ""
+  refreshToken: ""
+  tuitionClassId: ""
+  studentId: ""
+  examId: ""
+  studentUsername: john.student
+  studentPassword: password123
+  studentAccessToken: ""
+  studentRefreshToken: ""

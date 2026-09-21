@@ -1,0 +1,9 @@
+$kind: http-request
+description: "CAUTION: this permanently deletes the student in {{studentId}}. Use a throwaway test student, not your main one, before running this."
+url: "{{baseUrl}}/api/students/{{studentId}}"
+method: DELETE
+auth:
+  type: bearer
+  credentials:
+    token: "{{accessToken}}"
+order: 5000

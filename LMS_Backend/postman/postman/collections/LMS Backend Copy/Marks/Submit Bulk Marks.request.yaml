@@ -1,0 +1,18 @@
+$kind: http-request
+url: "{{baseUrl}}/api/marks/{{examId}}/bulk"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "marks": [
+        { "studentId": "{{studentId}}", "marksObtained": 85 }
+      ]
+    }
+auth:
+  type: bearer
+  credentials:
+    token: "{{accessToken}}"
+order: 2000

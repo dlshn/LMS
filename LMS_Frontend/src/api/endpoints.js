@@ -1,0 +1,47 @@
+import api from './client';
+
+// --- Auth ---
+export const registerAdmin = (data) => api.post('/api/auth/register', data);
+export const loginAdmin = (data) => api.post('/api/auth/login', data);
+export const loginStudent = (data) => api.post('/api/auth/student/login', data);
+export const refreshAdminToken = (refreshToken) =>
+  api.post('/api/auth/refresh', { refreshToken });
+export const refreshStudentToken = (refreshToken) =>
+  api.post('/api/auth/refresh', { refreshToken });
+
+// --- Students (admin) ---
+export const registerStudent = (data) => api.post('/api/students', data);
+export const getAllStudents = () => api.get('/api/students');
+export const getStudentById = (id) => api.get(`/api/students/${id}`);
+export const updateStudent = (id, data) => api.patch(`/api/students/${id}`, data);
+export const deleteStudent = (id) => api.delete(`/api/students/${id}`);
+
+// --- Attendance (admin) ---
+export const markAttendance = (data) => api.post('/api/attendance', data);
+export const getStudentAttendance = (studentId) =>
+  api.get(`/api/attendance/student/${studentId}`);
+
+// --- Exams (admin) ---
+export const createExam = (data) => api.post('/api/exams', data);
+export const getAllExams = () => api.get('/api/exams');
+export const updateExam = (id, data) => api.patch(`/api/exams/${id}`, data);
+export const publishExam = (id) => api.patch(`/api/exams/${id}/publish`);
+
+// --- Marks (admin) ---
+export const getMarksEntryForm = (examId) => api.get(`/api/marks/${examId}/form`);
+export const submitBulkMarks = (examId, marks) =>
+  api.post(`/api/marks/${examId}/bulk`, { marks });
+
+// --- Marks (student, requires student token) ---
+export const getMyResults = () =>
+  api.get('/api/marks/my-results', { useStudentAuth: true });
+
+// --- Notes (admin) ---
+export const uploadNote = (formData) =>
+  api.post('/api/notes', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+export const getAllNotes = () => api.get('/api/notes');
+
+// --- Public (no auth) ---
+export const getPublicResultByNumber = (studentNumber) => api.get(`/api/public/results/${studentNumber}`);

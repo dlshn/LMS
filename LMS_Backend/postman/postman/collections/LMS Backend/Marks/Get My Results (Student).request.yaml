@@ -1,0 +1,8 @@
+$kind: http-request
+url: "{{baseUrl}}/api/marks/my-results"
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{studentAccessToken}}"
+order: 3000

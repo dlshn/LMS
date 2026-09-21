@@ -1,0 +1,17 @@
+$kind: http-request
+description: Only works while the exam's status is DRAFT. Returns 400 once it's PUBLISHED.
+url: "{{baseUrl}}/api/exams/{{examId}}"
+method: PATCH
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "maxMarks": 100
+    }
+auth:
+  type: bearer
+  credentials:
+    token: "{{accessToken}}"
+order: 3000

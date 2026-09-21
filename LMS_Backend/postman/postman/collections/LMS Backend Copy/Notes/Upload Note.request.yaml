@@ -1,0 +1,18 @@
+$kind: http-request
+description: In the Body tab, switch the 'file' row's type from Text to File, then pick a real PDF/image from your computer before sending.
+url: "{{baseUrl}}/api/notes"
+method: POST
+body:
+  type: formdata
+  content:
+    - type: text
+      key: title
+      value: Algebra Chapter 1 Notes
+    - type: file
+      key: file
+      src: []
+auth:
+  type: bearer
+  credentials:
+    token: "{{accessToken}}"
+order: 1000
