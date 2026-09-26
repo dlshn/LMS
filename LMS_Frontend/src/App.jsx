@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AdminAuthProvider } from './context/AdminAuthContext';
 import { StudentAuthProvider } from './context/StudentAuthContext';
+import { ConfirmDialogProvider } from './context/ConfirmDialogContext';
 import AdminProtectedRoute from './components/AdminProtectedRoute';
 import StudentProtectedRoute from './components/StudentProtectedRoute';
 
@@ -22,6 +23,7 @@ export default function App() {
   return (
     <AdminAuthProvider>
       <StudentAuthProvider>
+        <ConfirmDialogProvider>
         <BrowserRouter>
           <Routes>
             {/* Public */}
@@ -93,6 +95,7 @@ export default function App() {
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </BrowserRouter>
+        </ConfirmDialogProvider>
       </StudentAuthProvider>
     </AdminAuthProvider>
   );
