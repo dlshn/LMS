@@ -60,12 +60,13 @@ export default function AdminDashboard() {
           </div>
 
           <div className="sheet-card" style={{ marginBottom: 20 }}>
-            <h3>Your Tuition Class ID</h3>
+            <h3>Your class join code</h3>
             <p className="muted text-sm">
-              Share this with students so they can check results without logging in.
+              Share this code with your students. They'll use it, together with the student number you
+              give them, to create their own login.
             </p>
-            <p className="student-number" style={{ fontSize: '0.95rem', wordBreak: 'break-all' }}>
-              {admin?.tuitionClassId}
+            <p className="score-red" style={{ fontSize: '1.6rem', letterSpacing: '0.08em' }}>
+              {admin?.joinCode || '—'}
             </p>
           </div>
 
@@ -83,6 +84,9 @@ export default function AdminDashboard() {
               </Link>
               <Link to="/admin/notes" className="btn btn-ghost">
                 Upload notes
+              </Link>
+              <Link to="/admin/notices" className="btn btn-ghost">
+                Post a notice
               </Link>
             </div>
           </div>

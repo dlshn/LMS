@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import AdminLayout from '../../components/AdminLayout';
 import * as endpoints from '../../api/endpoints';
+import { useConfirm } from '../../context/ConfirmDialogContext';
 
 const emptyForm = {
   title: '',
@@ -12,6 +13,7 @@ const emptyForm = {
 };
 
 export default function Exams() {
+  const confirm = useConfirm();
   const [exams, setExams] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -20,6 +22,7 @@ export default function Exams() {
   const [editingId, setEditingId] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [publishingId, setPublishingId] = useState(null);
+  const [showAllExams, setShowAllExams] = useState(false);
 
   async function loadExams() {
     setLoading(true);
@@ -79,9 +82,12 @@ export default function Exams() {
   }
 
   async function handlePublish(exam) {
-    if (!confirm(`Publish "${exam.title}"? Students will be able to see marks entered so far.`)) {
-      return;
-    }
+    const ok = await confirm({
+      title: `Publish "${exam.title}"?`,
+      message: 'Students will be able to see marks entered so far.',
+      confirmLabel: 'Publish',
+    });
+    if (!ok) return;
     setPublishingId(exam.id);
     setError('');
     try {
@@ -93,6 +99,9 @@ export default function Exams() {
       setPublishingId(null);
     }
   }
+
+  const EXAMS_PREVIEW_COUNT = 8;
+  const visibleExams = showAllExams ? exams : exams.slice(0, EXAMS_PREVIEW_COUNT);
 
   return (
     <AdminLayout>
@@ -162,7 +171,7 @@ export default function Exams() {
           <p>No exams yet. Create your first one.</p>
         </div>
       ) : (
-        <div className="sheet-card" style={{ padding: 0 }}>
+        <div className="sheet-card table-card">
           <table className="mark-table">
             <thead>
               <tr>
@@ -175,13 +184,13 @@ export default function Exams() {
               </tr>
             </thead>
             <tbody>
-              {exams.map((exam) => (
+              {visibleExams.map((exam) => (
                 <tr key={exam.id}>
-                  <td>{exam.title}</td>
-                  <td className="muted">{exam.subject}</td>
-                  <td className="muted">{new Date(exam.examDate).toLocaleDateString()}</td>
-                  <td className="student-number">{exam.maxMarks}</td>
-                  <td>
+                  <td data-label="Title">{exam.title}</td>
+                  <td className="muted" data-label="Subject">{exam.subject}</td>
+                  <td className="muted" data-label="Date">{new Date(exam.examDate).toLocaleDateString()}</td>
+                  <td className="student-number" data-label="Max marks">{exam.maxMarks}</td>
+                  <td data-label="Status">
                     <span className={`stamp ${exam.status === 'PUBLISHED' ? 'stamp-published' : 'stamp-draft'}`}>
                       {exam.status}
                     </span>
@@ -211,6 +220,15 @@ export default function Exams() {
               ))}
             </tbody>
           </table>
+          {exams.length > EXAMS_PREVIEW_COUNT && (
+            <button
+              type="button"
+              className="btn btn-ghost btn-sm spacer-top"
+              onClick={() => setShowAllExams((show) => !show)}
+            >
+              {showAllExams ? 'Show less' : `Show more (${exams.length - EXAMS_PREVIEW_COUNT} more)`}
+            </button>
+          )}
         </div>
       )}
     </AdminLayout>

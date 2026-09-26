@@ -67,4 +67,28 @@ async function getStudentAttendance(req, res) {
   }
 }
 
-module.exports = { markAttendance, getStudentAttendance };
+async function getMyAttendance(req, res) {
+  try {
+    const studentId = req.student.studentId;
+
+    const records = await prisma.attendance.findMany({
+      where: { studentId },
+      orderBy: { date: 'desc' },
+      select: { id: true, date: true, status: true },
+    });
+
+    const presentCount = records.filter((r) => r.status === 'PRESENT').length;
+    const totalCount = records.length;
+    const percentage = totalCount === 0 ? 0 : Math.round((presentCount / totalCount) * 100);
+
+    res.json({
+      summary: { totalDays: totalCount, presentDays: presentCount, percentage },
+      records,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Something went wrong while fetching your attendance' });
+  }
+}
+
+module.exports = { markAttendance, getStudentAttendance, getMyAttendance };

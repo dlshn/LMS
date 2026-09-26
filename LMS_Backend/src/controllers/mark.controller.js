@@ -98,11 +98,33 @@ async function getMyResults(req, res) {
       orderBy: { exam: { examDate: 'desc' } },
     });
 
+    // Rank needs every other student's mark for the same exam — one query
+    // for all of them, grouped by examId, rather than one query per exam.
+    const examIds = marks.map((m) => m.exam.id);
+    const allMarksForExams = await prisma.mark.findMany({
+      where: { examId: { in: examIds } },
+      select: { examId: true, marksObtained: true },
+    });
+
+    const scoresByExam = {};
+    for (const m of allMarksForExams) {
+      (scoresByExam[m.examId] ??= []).push(m.marksObtained);
+    }
+
+    // Competition ranking (1, 2, 2, 4, ...): equal marks share the same
+    // rank, and the rank after a tie skips ahead accordingly.
+    function rankOf(examId, score) {
+      const scores = scoresByExam[examId] || [];
+      return 1 + scores.filter((s) => s > score).length;
+    }
+
     res.json({
       count: marks.length,
       results: marks.map((m) => ({
         exam: m.exam,
         marksObtained: m.marksObtained,
+        rank: rankOf(m.exam.id, m.marksObtained),
+        totalStudents: (scoresByExam[m.exam.id] || []).length,
       })),
     });
   } catch (error) {
