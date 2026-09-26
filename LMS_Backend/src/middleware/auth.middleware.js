@@ -11,6 +11,9 @@ function requireAuth(req, res, next) {
 
   try {
     const decoded = verifyAccessToken(token);
+    if (decoded.type === 'student' || !decoded.adminId) {
+      return res.status(403).json({ error: 'This route is for admins only' });
+    }
     req.admin = decoded;
     next();
   } catch (error) {
