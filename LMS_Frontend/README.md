@@ -28,7 +28,7 @@ Visit `http://localhost:5173`.
 | `/admin/attendance` | Admin | Mark attendance, view a student's history |
 | `/admin/exams` | Admin | Create / edit / publish exams |
 | `/admin/exams/:examId/marks` | Admin | Bulk marks entry form (the "Add Mark" screen) |
-| `/admin/notes` | Admin | Upload / download notes (Cloudinary) |
+| `/admin/notes` | Admin | Upload / download notes (Cloudflare R2) |
 | `/student/login` | Student | Log in with username + password |
 | `/student/dashboard` | Student | View all published results |
 | `/check-result` | Anyone | No login - check a result by Tuition Class ID + student number |
