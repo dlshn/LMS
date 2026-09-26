@@ -1,8 +1,12 @@
 import { useEffect, useState } from 'react';
 import AdminLayout from '../../components/AdminLayout';
 import * as endpoints from '../../api/endpoints';
+import { useConfirm } from '../../context/ConfirmDialogContext';
+import { getFileDisplay, formatUploaded } from '../../utils/fileType';
+import { IconFilePdf, IconImage, IconDownload, IconTrash } from '../../components/icons';
 
 export default function Notes() {
+  const confirm = useConfirm();
   const [notes, setNotes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -56,6 +60,22 @@ export default function Notes() {
     }
   }
 
+  async function handleDelete(note) {
+    const ok = await confirm({
+      title: `Delete "${note.title}"?`,
+      message: 'Students will no longer be able to download this note.',
+      confirmLabel: 'Delete',
+      danger: true,
+    });
+    if (!ok) return;
+    try {
+      await endpoints.deleteNote(note.id);
+      await loadNotes();
+    } catch (err) {
+      setError(err.response?.data?.error || 'Could not delete the note.');
+    }
+  }
+
   return (
     <AdminLayout>
       <div className="page-header">
@@ -94,31 +114,32 @@ export default function Notes() {
           <p>No notes uploaded yet.</p>
         </div>
       ) : (
-        <div className="sheet-card" style={{ padding: 0 }}>
-          <table className="mark-table">
-            <thead>
-              <tr>
-                <th>Title</th>
-                <th>Type</th>
-                <th>Uploaded</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {notes.map((n) => (
-                <tr key={n.id}>
-                  <td>{n.title}</td>
-                  <td className="muted student-number">{n.fileType}</td>
-                  <td className="muted">{new Date(n.uploadedAt).toLocaleDateString()}</td>
-                  <td>
-                    <a href={n.fileUrl} target="_blank" rel="noreferrer" className="btn btn-ghost btn-sm">
-                      Download
-                    </a>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="note-list">
+          {notes.map((n) => {
+            const display = getFileDisplay(n.fileType);
+            return (
+              <div key={n.id} className="note-row">
+                <div className={`note-row-icon note-row-icon--${display.kind}`}>
+                  {display.kind === 'image' ? <IconImage /> : <IconFilePdf />}
+                </div>
+                <div className="note-row-main">
+                  <div className="note-row-title-line">
+                    <span className="note-row-title">{n.title}</span>
+                    <span className="note-row-badge">{display.label}</span>
+                  </div>
+                  <p className="note-row-meta">Uploaded {formatUploaded(n.uploadedAt)}</p>
+                </div>
+                <div className="note-row-actions">
+                  <a href={n.fileUrl} target="_blank" rel="noreferrer" className="note-row-download" aria-label="Download">
+                    <IconDownload />
+                  </a>
+                  <button className="note-row-download note-row-download--danger" onClick={() => handleDelete(n)} aria-label="Delete note">
+                    <IconTrash />
+                  </button>
+                </div>
+              </div>
+            );
+          })}
         </div>
       )}
     </AdminLayout>

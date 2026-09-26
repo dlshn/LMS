@@ -1,6 +1,6 @@
 const prisma = require('../utils/prisma');
-const cloudinary = require('../utils/cloudinary');
-const streamifier = require('streamifier');
+const r2 = require('../utils/r2');
+const { PutObjectCommand, DeleteObjectCommand } = require('@aws-sdk/client-s3');
 
 function sanitizeForFilename(text) {
   return text
@@ -8,19 +8,6 @@ function sanitizeForFilename(text) {
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/(^-|-$)/g, '');
-}
-
-function streamUpload(fileBuffer, folder, publicId) {
-  return new Promise((resolve, reject) => {
-    const stream = cloudinary.uploader.upload_stream(
-      { folder, public_id: publicId, resource_type: 'auto' },
-      (error, result) => {
-        if (result) resolve(result);
-        else reject(error);
-      }
-    );
-    streamifier.createReadStream(fileBuffer).pipe(stream);
-  });
 }
 
 async function uploadNote(req, res) {
@@ -36,16 +23,23 @@ async function uploadNote(req, res) {
     }
 
     const env = process.env.NODE_ENV || 'development';
-    const folder = `stlms/${env}/${tuitionClassId}/notes`;
-    const publicId = `${sanitizeForFilename(title)}-${Date.now()}`;
+    const fileKey = `${env}/${tuitionClassId}/notes/${sanitizeForFilename(title)}-${Date.now()}-${req.file.originalname}`;
 
-    const result = await streamUpload(req.file.buffer, folder, publicId);
+    await r2.send(
+      new PutObjectCommand({
+        Bucket: process.env.R2_BUCKET_NAME,
+        Key: fileKey,
+        Body: req.file.buffer,
+        ContentType: req.file.mimetype,
+      })
+    );
 
     const note = await prisma.note.create({
       data: {
         tuitionClassId,
         title,
-        fileUrl: result.secure_url,
+        fileKey,
+        fileUrl: `${process.env.R2_PUBLIC_URL}/${fileKey}`,
         fileType: req.file.mimetype,
       },
     });
@@ -73,4 +67,40 @@ async function getAllNotes(req, res) {
   }
 }
 
-module.exports = { uploadNote, getAllNotes };
+async function deleteNote(req, res) {
+  try {
+    const tuitionClassId = req.admin.tuitionClassId;
+    const { id } = req.params;
+
+    const note = await prisma.note.findFirst({ where: { id, tuitionClassId } });
+    if (!note) {
+      return res.status(404).json({ error: 'Note not found in your tuition class' });
+    }
+
+    await r2.send(new DeleteObjectCommand({ Bucket: process.env.R2_BUCKET_NAME, Key: note.fileKey }));
+    await prisma.note.delete({ where: { id } });
+
+    res.json({ message: 'Note deleted' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Something went wrong while deleting the note' });
+  }
+}
+
+async function getNotesForStudent(req, res) {
+  try {
+    const tuitionClassId = req.student.tuitionClassId;
+
+    const notes = await prisma.note.findMany({
+      where: { tuitionClassId },
+      orderBy: { uploadedAt: 'desc' },
+    });
+
+    res.json({ count: notes.length, notes });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Something went wrong while fetching notes' });
+  }
+}
+
+module.exports = { uploadNote, getAllNotes, deleteNote, getNotesForStudent };

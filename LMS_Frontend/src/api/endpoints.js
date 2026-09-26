@@ -46,6 +46,10 @@ export const uploadNote = (formData) =>
     headers: { 'Content-Type': 'multipart/form-data' },
   });
 export const getAllNotes = () => api.get('/api/notes');
+export const deleteNote = (id) => api.delete(`/api/notes/${id}`);
+
+// --- Notes (student, requires student token) ---
+export const getMyNotes = () => api.get('/api/notes/my-notes', { useStudentAuth: true });
 
 // --- Notices (admin) ---
 export const createNotice = (data) => api.post('/api/notices', data);
