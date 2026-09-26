@@ -14,6 +14,7 @@ import Exams from './pages/admin/Exams';
 import MarksEntry from './pages/admin/MarksEntry';
 import Notes from './pages/admin/Notes';
 import Notices from './pages/admin/Notices';
+import Recordings from './pages/admin/Recordings';
 
 import StudentLogin from './pages/student/Login';
 import StudentRegister from './pages/student/Register';
@@ -88,6 +89,15 @@ export default function App() {
               element={
                 <AdminProtectedRoute>
                   <Notices />
+                </AdminProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/admin/recordings"
+              element={
+                <AdminProtectedRoute>
+                  <Recordings />
                 </AdminProtectedRoute>
               }
             />

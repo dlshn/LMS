@@ -19,6 +19,7 @@ app.use('/api/exams', require('./routes/exam.routes'));
 app.use('/api/marks', require('./routes/mark.routes'));
 app.use('/api/notes', require('./routes/note.routes'));
 app.use('/api/notices', require('./routes/notice.routes'));
+app.use('/api/videos', require('./routes/video.routes'));
 
 
 const PORT = process.env.PORT || 5000;

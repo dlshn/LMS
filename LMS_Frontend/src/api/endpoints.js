@@ -55,3 +55,11 @@ export const deleteNotice = (id) => api.delete(`/api/notices/${id}`);
 // --- Notices (student, requires student token) ---
 export const getActiveNotices = () =>
   api.get('/api/notices/active', { useStudentAuth: true });
+
+// --- Recordings (admin) ---
+export const createVideo = (data) => api.post('/api/videos', data);
+export const getAllVideos = () => api.get('/api/videos');
+export const deleteVideo = (id) => api.delete(`/api/videos/${id}`);
+
+// --- Recordings (student, requires student token) ---
+export const getMyVideos = () => api.get('/api/videos/my-videos', { useStudentAuth: true });
