@@ -25,6 +25,10 @@ export const markAttendance = (data) => api.post('/api/attendance', data);
 export const getStudentAttendance = (studentId) =>
   api.get(`/api/attendance/student/${studentId}`);
 
+// --- Attendance (student, requires student token) ---
+export const getMyAttendance = () =>
+  api.get('/api/attendance/my-attendance', { useStudentAuth: true });
+
 // --- Exams (admin) ---
 export const createExam = (data) => api.post('/api/exams', data);
 export const getAllExams = () => api.get('/api/exams');
