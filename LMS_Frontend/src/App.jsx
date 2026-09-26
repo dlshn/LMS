@@ -16,7 +16,6 @@ import Notes from './pages/admin/Notes';
 import StudentLogin from './pages/student/Login';
 import StudentDashboard from './pages/student/Dashboard';
 
-import CheckResult from './pages/public/CheckResult';
 import Home from './pages/public/Home';
 
 export default function App() {
@@ -27,7 +26,6 @@ export default function App() {
           <Routes>
             {/* Public */}
             <Route path="/" element={<Home />} />
-            <Route path="/check-result" element={<CheckResult />} />
 
             {/* Admin */}
             <Route path="/admin/register" element={<AdminRegister />} />

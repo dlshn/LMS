@@ -1,0 +1,9 @@
+# Root-level env file for docker-compose (DB password, JWT secrets, etc.)
+.env
+.env.*
+!.env.example
+
+# Editor / OS cruft
+.vscode/
+.idea/
+.DS_Store
