@@ -1,109 +1,157 @@
 import { Link } from 'react-router-dom';
 import PublicNavbar from '../../components/PublicNavbar';
+import SiteFooter from '../../components/SiteFooter';
+import { IconGraduationCap, IconLock, IconBolt, IconLayers, IconClock } from '../../components/icons';
 
 export default function Home() {
   return (
-    <div className="app-shell">
+    <div className="app-shell public-shell">
       <PublicNavbar />
 
-      <div className="hero-section">
-        <div className="hero-inner">
+      <div className="hero-banner">
+        {/* Drop a photo at LMS_Frontend/public/hero-photo.jpg — it shows
+            automatically the moment it's there; until then the gradient
+            underneath is the whole background, so there's no empty
+            "placeholder" state. */}
+        <div className="hero-banner-media">
+          <img
+            src="/hero-photo.jpeg"
+            alt=""
+            onError={(e) => {
+              e.currentTarget.style.display = 'none';
+            }}
+          />
+        </div>
+
+        <div className="hero-banner-content">
           <div>
-            <span className="hero-eyebrow">For Sri Lankan tuition classes</span>
+            <span className="hero-eyebrow">
+              <IconGraduationCap /> Student Result Portal
+            </span>
             <h1>
-              Attendance, marks and results — <em>off the exercise book</em>, onto one screen.
+              ඔබගේ <em>Digital</em> පන්ති කාමරය.
             </h1>
             <p className="hero-sub">
-              Register your tuition class, manage students, mark attendance, run exams, and let
-              students check their own results — by student number, no login needed.
+              පළමුවර Register වීමේදී ඔබගේ ගුරුවරයාගේ උපදෙස් ලබාගන්න.
+              <br />
+              ඉන්පසු ඔබගේ username සහ password භාවිතා කර login විය හැක.
             </p>
+
             <div className="hero-actions">
-              <Link to="/admin/register" className="btn btn-accent">
-                Register your class
+              <Link to="/student/register" className="btn btn-accent">
+                Student Registr
               </Link>
-              <Link to="/check-result" className="btn btn-ghost">
-                Check a result
+              <Link to="/student/login" className="btn btn-ghost">
+                Student Login
               </Link>
             </div>
           </div>
+        </div>
 
-          <div className="hero-mock">
-            <div className="hero-mock-header">
-              <span>Term 10 Mathematics</span>
-              <span>Published</span>
-            </div>
-            <div className="hero-mock-row">
-              <span>Nimal Silva (S001)</span>
-              <span className="score-red">92 / 100</span>
-            </div>
-            <div className="hero-mock-row">
-              <span>Kavindi Perera (S002)</span>
-              <span className="score-red">87 / 100</span>
-            </div>
-            <div className="hero-mock-row">
-              <span>Class average</span>
-              <span className="muted">73.4</span>
-            </div>
+        <div className="hero-banner-hint">
+          myclass.edu.lk 
+        </div>
+      </div>
+
+      <div className="stat-strip-section">
+        <div className="stat-strip">
+          <div className="stat-strip-item">
+            <span className="stat-strip-icon" aria-hidden="true"><IconLock /></span>
+            <span className="stat-strip-label">Your Own<br />Login</span>
+          </div>
+          <div className="stat-strip-item">
+            <span className="stat-strip-icon" aria-hidden="true"><IconBolt /></span>
+            <span className="stat-strip-label">Instant<br />Results</span>
+          </div>
+          <div className="stat-strip-item">
+            <span className="stat-strip-icon" aria-hidden="true"><IconLayers /></span>
+            <span className="stat-strip-label">Shared<br />Notes</span>
+          </div>
+          <div className="stat-strip-item">
+            <span className="stat-strip-icon" aria-hidden="true"><IconClock /></span>
+            <span className="stat-strip-label">24/7<br />Access</span>
+          </div>
+        </div>
+      </div>
+
+      <div className="steps-section">
+        <h2>How it works</h2>
+        <p className="features-subtitle">Three steps, no paperwork, no waiting for a printed sheet.</p>
+        <div className="step-grid">
+          <div className="step-card">
+            <span className="step-number">1</span>
+            <h3>Your admin adds you to the class</h3>
+            <p className="text-sm muted">
+              Your tuition class admin gives you a student number and a class join code.
+            </p>
+          </div>
+          <div className="step-card">
+            <span className="step-number">2</span>
+            <h3>You create your own login</h3>
+            <p className="text-sm muted">
+              Use your student number and the join code once, to set your own username and password.
+            </p>
+          </div>
+          <div className="step-card">
+            <span className="step-number">3</span>
+            <h3>Log in, anytime</h3>
+            <p className="text-sm muted">
+              See your marks, rank, class average, attendance and shared notes whenever you like.
+            </p>
           </div>
         </div>
       </div>
 
       <div className="features-section">
-        <h2>Everything a tuition class actually needs</h2>
-        <p className="features-subtitle">No clutter, no features built for schools twice your size.</p>
+        <h2>Built for students, run by your tutor</h2>
+        <p className="features-subtitle">Everything a tuition class actually needs — nothing built for schools twice your size.</p>
         <div className="feature-grid">
           <div className="feature-card">
-            <span className="feature-icon">Students</span>
-            <h3>Student records</h3>
+            <span className="feature-icon">Results</span>
+            <h3>Your own secure login</h3>
             <p className="text-sm muted">
-              Register students with a student number, contact details, and login credentials in one place.
+              Create your account once with your admin's join code — no one else can see your results.
+            </p>
+          </div>
+          <div className="feature-card">
+            <span className="feature-icon">Access</span>
+            <h3>A dashboard just for you</h3>
+            <p className="text-sm muted">
+              Track every result over time, not just the latest one, with rank and class average included.
+            </p>
+          </div>
+          <div className="feature-card">
+            <span className="feature-icon">Notes</span>
+            <h3>Shared class notes</h3>
+            <p className="text-sm muted">
+              Download PDFs, images, and slides your tutor uploads — anytime, from any device.
             </p>
           </div>
           <div className="feature-card">
             <span className="feature-icon">Attendance</span>
-            <h3>Daily attendance</h3>
+            <h3>Attendance on record</h3>
             <p className="text-sm muted">
-              Mark present or absent per class, with automatic percentage summaries per student.
+              Presence is tracked per class, with an automatic percentage summary.
             </p>
           </div>
           <div className="feature-card">
             <span className="feature-icon">Exams</span>
             <h3>Exams &amp; marks</h3>
             <p className="text-sm muted">
-              Create an exam, fill in every student's marks on one form, then publish when ready.
+              Every exam your class sits, with marks entered once and published when ready.
             </p>
           </div>
           <div className="feature-card">
-            <span className="feature-icon">Results</span>
-            <h3>Instant result checking</h3>
+            <span className="feature-icon">Students</span>
+            <h3>One record per student</h3>
             <p className="text-sm muted">
-              Students check their own rank and marks by student number — just like an official release.
-            </p>
-          </div>
-          <div className="feature-card">
-            <span className="feature-icon">Notes</span>
-            <h3>Shared notes</h3>
-            <p className="text-sm muted">
-              Upload PDFs, images, or slides once — every student can download them anytime.
-            </p>
-          </div>
-          <div className="feature-card">
-            <span className="feature-icon">Access</span>
-            <h3>Student portal</h3>
-            <p className="text-sm muted">
-              Students get their own login to track results and progress over time.
+              Your details, contact info and history live in one place for your tutor to manage.
             </p>
           </div>
         </div>
       </div>
 
-      <div className="cta-band">
-        <h2>Ready to digitize your tuition class?</h2>
-        <p className="muted">Takes a few minutes to set up. No cost to get started.</p>
-        <Link to="/admin/register" className="btn btn-accent">
-          Register your class
-        </Link>
-      </div>
+      <SiteFooter />
     </div>
   );
 }

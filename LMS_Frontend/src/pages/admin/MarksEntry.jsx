@@ -100,7 +100,7 @@ export default function MarksEntry() {
           <p>No students in this tuition class yet. Add students before entering marks.</p>
         </div>
       ) : (
-        <div className="sheet-card" style={{ padding: 0 }}>
+        <div className="sheet-card table-card">
           <table className="mark-table">
             <thead>
               <tr>
@@ -112,9 +112,9 @@ export default function MarksEntry() {
             <tbody>
               {rows.map((row) => (
                 <tr key={row.studentId}>
-                  <td className="student-number">{row.studentNumber}</td>
-                  <td>{row.fullName}</td>
-                  <td>
+                  <td className="student-number" data-label="Student No.">{row.studentNumber}</td>
+                  <td data-label="Name">{row.fullName}</td>
+                  <td data-label={`Marks / ${exam?.maxMarks}`}>
                     <input
                       type="number"
                       className="marks-input"

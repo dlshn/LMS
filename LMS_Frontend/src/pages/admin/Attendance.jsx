@@ -124,26 +124,28 @@ export default function Attendance() {
             {records.length === 0 ? (
               <p className="muted">No attendance marked yet for this student.</p>
             ) : (
-              <table className="mark-table">
-                <thead>
-                  <tr>
-                    <th>Date</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {records.map((r) => (
-                    <tr key={r.id}>
-                      <td>{new Date(r.date).toLocaleDateString()}</td>
-                      <td>
-                        <span className={`stamp ${r.status === 'PRESENT' ? 'stamp-present' : 'stamp-absent'}`}>
-                          {r.status}
-                        </span>
-                      </td>
+              <div className="table-card">
+                <table className="mark-table">
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>Status</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {records.map((r) => (
+                      <tr key={r.id}>
+                        <td data-label="Date">{new Date(r.date).toLocaleDateString()}</td>
+                        <td data-label="Status">
+                          <span className={`stamp ${r.status === 'PRESENT' ? 'stamp-present' : 'stamp-absent'}`}>
+                            {r.status}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             )}
           </>
         )}

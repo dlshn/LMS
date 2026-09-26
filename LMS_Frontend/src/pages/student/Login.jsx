@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useStudentAuth } from '../../context/StudentAuthContext';
+import PublicNavbar from '../../components/PublicNavbar';
 
 export default function StudentLogin() {
   const { login } = useStudentAuth();
@@ -25,7 +26,9 @@ export default function StudentLogin() {
   }
 
   return (
-    <div className="centered-page">
+    <div className="app-shell">
+      <PublicNavbar />
+      <div className="centered-page">
       <div className="sheet-card auth-card">
         <span className="auth-eyebrow">Student</span>
         <h1>Log in</h1>
@@ -58,11 +61,12 @@ export default function StudentLogin() {
         </form>
 
         <p className="text-sm spacer-top">
-          Just want to check a result? <Link to="/check-result">Check by student number</Link>
+          New here? <Link to="/student/register">Create your account</Link>
         </p>
         <p className="text-sm">
           Tuition admin? <Link to="/admin/login">Log in here</Link>
         </p>
+      </div>
       </div>
     </div>
   );

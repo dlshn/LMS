@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAdminAuth } from '../../context/AdminAuthContext';
+import PublicNavbar from '../../components/PublicNavbar';
 
 export default function AdminRegister() {
   const { register } = useAdminAuth();
@@ -33,7 +34,9 @@ export default function AdminRegister() {
   }
 
   return (
-    <div className="centered-page">
+    <div className="app-shell">
+      <PublicNavbar />
+      <div className="centered-page">
       <div className="sheet-card auth-card">
         <span className="auth-eyebrow">New tuition class</span>
         <h1>Register your class</h1>
@@ -94,6 +97,7 @@ export default function AdminRegister() {
         <p className="text-sm spacer-top">
           Already have a class? <Link to="/admin/login">Log in</Link>
         </p>
+      </div>
       </div>
     </div>
   );

@@ -1,34 +1,32 @@
 /* ============================================================
    STLMS Design Tokens
-   Signature idea: a "mark sheet" aesthetic. Cards read like ruled
-   exam paper with a red margin rule; status uses an ink-stamp
-   badge instead of a generic colored pill; scores get a red-pen
-   underline treatment. Every visual choice ties back to grading
-   and report cards, since that's the actual subject of this app.
+   "Course platform" theme: deep navy + amber-orange on a soft
+   blue-white page, plain white rounded cards with a soft shadow
+   (no colored borders/rules), clean sans-serif type throughout.
    ============================================================ */
 
 :root {
   /* Color */
-  --color-bg: #eef1f0;          /* pale blue-grey paper */
-  --color-surface: #ffffff;     /* card surface */
-  --color-surface-ruled: #fbfbf9; /* faint ruled-paper tint */
-  --color-ink: #17324a;         /* primary navy ink */
-  --color-ink-soft: #4c6272;    /* secondary text */
-  --color-margin-rule: #b3382c; /* red margin rule / pen-check red */
-  --color-gold: #c99a2e;        /* rank / highlight gold */
-  --color-approve: #3c7a5a;     /* stamp green (published / present) */
-  --color-danger: #b3382c;
-  --color-border: #d8dee0;
-  --color-border-soft: #e6e9e6;
+  --color-bg: #eef1fb;            /* soft blue-white page background */
+  --color-surface: #ffffff;       /* card surface */
+  --color-surface-ruled: #f6f7fd; /* faint tint for zebra/hover rows */
+  --color-ink: #1a2158;           /* primary navy */
+  --color-ink-soft: #5b6088;      /* secondary text */
+  --color-margin-rule: #f7941d;   /* orange — primary accent / CTAs */
+  --color-gold: #ffb020;          /* amber — ratings / rank / highlights */
+  --color-approve: #22a06b;       /* green (published / present) */
+  --color-danger: #e0483e;
+  --color-border: #e1e4f5;
+  --color-border-soft: #edeffa;
 
   /* Type */
-  --font-display: 'Fraunces', Georgia, serif;
+  --font-display: 'Inter', system-ui, -apple-system, sans-serif;
   --font-body: 'Inter', system-ui, -apple-system, sans-serif;
   --font-mono: 'IBM Plex Mono', 'Courier New', monospace;
 
   /* Layout */
-  --radius: 6px;
-  --shadow-card: 0 1px 2px rgba(23, 50, 74, 0.06), 0 4px 14px rgba(23, 50, 74, 0.05);
+  --radius: 14px;
+  --shadow-card: 0 2px 6px rgba(26, 33, 88, 0.04), 0 10px 26px rgba(26, 33, 88, 0.07);
 }
 
 * {
@@ -84,7 +82,10 @@ button, input, select, textarea {
 }
 
 .centered-page {
-  min-height: 100vh;
+  /* Always sits under a topbar inside .app-shell now — flex: 1 fills
+     whatever height is left in that column instead of adding its own
+     100vh on top of the topbar's, which pushed the card below the fold. */
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -95,22 +96,13 @@ button, input, select, textarea {
   background-color: var(--color-bg);
 }
 
-/* Ruled "mark sheet" card - the signature element */
+/* Plain white rounded card, the base surface everything sits on */
 .sheet-card {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
-  border-left: 4px solid var(--color-margin-rule);
   border-radius: var(--radius);
   box-shadow: var(--shadow-card);
-  padding: 28px 28px 28px 24px;
-}
-
-.sheet-card--ruled {
-  background-image: repeating-linear-gradient(
-    var(--color-surface) 0px,
-    var(--color-surface) 31px,
-    var(--color-border-soft) 32px
-  );
+  padding: 28px;
 }
 
 .auth-card {
@@ -179,6 +171,120 @@ button, input, select, textarea {
   color: #fff;
 }
 
+/* Notice bell — sits inside .topbar-nav, but shouldn't inherit the
+   full-width nav-item treatment that rule gets on narrow screens
+   (see the max-width: 768px block), so it's pinned with an explicit,
+   higher-specificity size here regardless of breakpoint. */
+.notice-bell {
+  position: relative;
+}
+
+.notice-bell-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px !important;
+  height: 38px;
+  padding: 0 !important;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  color: #d9e2e6;
+  cursor: pointer;
+}
+
+.notice-bell-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.notice-bell-badge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: var(--color-margin-rule);
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.notice-bell-panel {
+  position: absolute;
+  top: 46px;
+  right: 0;
+  width: 300px;
+  max-width: 90vw;
+  max-height: 360px;
+  overflow-y: auto;
+  background: var(--color-surface);
+  color: var(--color-ink);
+  border-radius: 12px;
+  box-shadow: var(--shadow-card);
+  border: 1px solid var(--color-border);
+  z-index: 30;
+}
+
+.notice-bell-header {
+  padding: 12px 14px;
+  font-weight: 700;
+  border-bottom: 1px solid var(--color-border-soft);
+}
+
+.notice-bell-empty {
+  padding: 14px;
+}
+
+.notice-bell-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.notice-bell-list li {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--color-border-soft);
+}
+
+.notice-bell-list li:last-child { border-bottom: none; }
+
+.notice-bell-list p {
+  margin: 0 0 4px;
+  font-size: 0.88rem;
+  color: var(--color-ink);
+  white-space: pre-wrap;
+}
+
+@media (max-width: 768px) {
+  .notice-bell-panel { right: auto; left: 0; }
+}
+
+.topbar-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.topbar-toggle {
+  display: none;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.25);
+  color: #fff;
+  font-size: 1.1rem;
+  line-height: 1;
+  padding: 7px 11px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
 .page-body {
   flex: 1;
   padding: 28px;
@@ -222,6 +328,58 @@ button, input, select, textarea {
   border-color: var(--color-margin-rule);
 }
 
+/* Groups the fields an admin hands the student (student number, join
+   code) apart from the ones the student fills in themselves, so it's
+   obvious where a typo needs to be double-checked against what the
+   admin gave them. */
+.admin-provided {
+  background: var(--color-surface-ruled);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius);
+  padding: 16px 16px 4px;
+  margin-bottom: 20px;
+}
+
+.admin-provided-label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-margin-rule);
+  margin-bottom: 12px;
+}
+
+.password-field {
+  position: relative;
+}
+
+.password-field input {
+  padding-right: 40px;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  color: var(--color-ink-soft);
+  cursor: pointer;
+}
+
+.password-toggle:hover {
+  color: var(--color-ink);
+  background: var(--color-border-soft);
+}
+
 .btn {
   display: inline-flex;
   align-items: center;
@@ -242,13 +400,13 @@ button, input, select, textarea {
   background: var(--color-ink);
   color: #fff;
 }
-.btn-primary:hover { background: #0f2436; }
+.btn-primary:hover { background: #12163f; }
 
 .btn-accent {
   background: var(--color-margin-rule);
   color: #fff;
 }
-.btn-accent:hover { background: #99301f; }
+.btn-accent:hover { background: #d9820f; }
 
 .btn-ghost {
   background: transparent;
@@ -262,6 +420,9 @@ button, input, select, textarea {
 .btn-sm { padding: 6px 12px; font-size: 0.8rem; }
 
 .btn-danger-text {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   background: transparent;
   color: var(--color-danger);
   border: none;
@@ -269,6 +430,44 @@ button, input, select, textarea {
   cursor: pointer;
   font-weight: 600;
   font-size: 0.82rem;
+}
+
+.btn-danger-solid {
+  background: var(--color-danger);
+  color: #fff;
+}
+.btn-danger-solid:hover { background: #b93a32; }
+
+/* Confirm dialog — replaces window.confirm() with something that matches
+   the app instead of the browser's unstyled, origin-labelled native
+   popup. See context/ConfirmDialogContext. */
+.confirm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(23, 30, 70, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 100;
+}
+
+.confirm-dialog {
+  background: var(--color-surface);
+  border-radius: var(--radius);
+  box-shadow: 0 30px 60px rgba(23, 30, 70, 0.3);
+  padding: 24px;
+  width: 100%;
+  max-width: 400px;
+}
+
+.confirm-dialog h3 { margin-bottom: 8px; }
+
+.confirm-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
 }
 
 /* Table */
@@ -297,6 +496,17 @@ button, input, select, textarea {
 
 .mark-table tr:hover td {
   background: var(--color-surface-ruled);
+}
+
+/* Calls out the newest release in a results table (e.g. the student
+   dashboard) so it doesn't blend into older rows. */
+.mark-table tr.row-highlight td {
+  background: rgba(201, 154, 46, 0.1);
+  font-weight: 600;
+}
+
+.mark-table tr.row-highlight:hover td {
+  background: rgba(201, 154, 46, 0.16);
 }
 
 .student-number {
@@ -346,6 +556,12 @@ button, input, select, textarea {
   color: var(--color-margin-rule);
 }
 
+.stamp-latest {
+  color: var(--color-gold);
+  margin-left: 8px;
+  vertical-align: middle;
+}
+
 /* Score display with red-pen underline */
 .score-red {
   font-family: var(--font-mono);
@@ -371,6 +587,12 @@ button, input, select, textarea {
   font-size: 0.85rem;
 }
 
+.rank-badge--sm {
+  width: 24px;
+  height: 24px;
+  font-size: 0.72rem;
+}
+
 /* Cards grid */
 .stat-grid {
   display: grid;
@@ -383,6 +605,7 @@ button, input, select, textarea {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
   padding: 16px 18px;
 }
 
@@ -400,6 +623,373 @@ button, input, select, textarea {
   font-size: 1.7rem;
   font-weight: 700;
 }
+
+/* Icon-badge variant, used on the student dashboard's stat row */
+.stat-card--icon {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.stat-icon-badge {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  font-size: 1.25rem;
+}
+
+.stat-icon-badge--ink { background: rgba(23, 50, 74, 0.1); color: var(--color-ink); }
+.stat-icon-badge--red { background: rgba(179, 56, 44, 0.1); color: var(--color-margin-rule); }
+.stat-icon-badge--green { background: rgba(60, 122, 90, 0.1); color: var(--color-approve); }
+.stat-icon-badge--gold { background: rgba(201, 154, 46, 0.12); color: var(--color-gold); }
+
+/* Chart + attendance side by side, stacking on narrow screens */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 20px;
+  margin-bottom: 20px;
+  align-items: start;
+}
+
+@media (max-width: 860px) {
+  .dashboard-grid { grid-template-columns: 1fr; }
+}
+
+/* Recordings — thumbnail/embed cards in a responsive grid */
+.video-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.video-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+  padding: 0;
+}
+
+.video-thumb,
+.video-embed {
+  display: block;
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: var(--color-ink);
+}
+
+.video-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.video-embed iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.video-card-body {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 14px 16px;
+}
+
+.video-card-title {
+  font-weight: 600;
+  color: var(--color-ink);
+  margin: 0 0 2px;
+}
+
+/* Notes — a flat list of rows (icon + title + upload time), not a card
+   grid: a note is a document to open, not a thumbnail to browse visually
+   like a recording. The icon is color-coded per file type. */
+.note-list {
+  margin-top: 12px;
+}
+
+.note-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 4px;
+  border-bottom: 1px solid var(--color-border-soft);
+}
+
+.note-row:last-child {
+  border-bottom: none;
+}
+
+.note-row-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.note-row-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.note-row-icon--pdf { background: rgba(224, 72, 62, 0.1); color: var(--color-danger); }
+.note-row-icon--doc { background: rgba(23, 50, 74, 0.1); color: var(--color-ink); }
+.note-row-icon--ppt { background: rgba(247, 148, 29, 0.12); color: var(--color-margin-rule); }
+.note-row-icon--image { background: var(--color-surface-ruled); color: var(--color-ink-soft); }
+.note-row-icon--file { background: var(--color-surface-ruled); color: var(--color-ink-soft); }
+
+.note-row-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.note-row-title-line {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.note-row-title {
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.note-row-badge {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--color-ink-soft);
+}
+
+.note-row-meta {
+  color: var(--color-ink-soft);
+  font-size: 0.85rem;
+  margin-top: 2px;
+}
+
+.note-row-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.note-row-download {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  padding: 0;
+  color: var(--color-ink);
+  cursor: pointer;
+}
+
+.note-row-download:hover {
+  background: var(--color-surface-ruled);
+  border-color: var(--color-ink-soft);
+}
+
+.note-row-download--danger {
+  color: var(--color-danger);
+  border-color: rgba(224, 72, 62, 0.35);
+}
+
+.note-row-download--danger:hover {
+  background: rgba(224, 72, 62, 0.1);
+  border-color: var(--color-danger);
+}
+
+/* Marks-by-exam bar chart — plain HTML/CSS, single series so one hue and
+   no legend (the card title names the series). */
+.marks-chart {
+  /* Headroom for a value label above a near-100% bar. This lives on the
+     wrapper, not .marks-chart-bars, so it never changes what "100%"
+     height means for a bar — that has to stay pixel-identical to what
+     "100%" means for a gridline, or bars stop lining up with their own
+     axis. */
+  padding-top: 22px;
+}
+
+.marks-chart-plot {
+  position: relative;
+  height: 200px;
+  margin: 8px 0 30px 30px;
+}
+
+.marks-chart-gridline {
+  position: absolute;
+  left: 0;
+  right: 0;
+  border-top: 1px dashed var(--color-border-soft);
+}
+
+.marks-chart-gridline:first-child { border-top-color: var(--color-border); }
+
+.marks-chart-tick {
+  position: absolute;
+  left: -30px;
+  top: -7px;
+  width: 24px;
+  text-align: right;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--color-ink-soft);
+}
+
+.marks-chart-bars {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.marks-chart-bar-col {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  position: relative;
+}
+
+.marks-chart-bar {
+  position: relative; /* anchors the value label to this bar's own top edge */
+  width: 100%;
+  max-width: 40px;
+  background: var(--color-margin-rule);
+  border-radius: 4px 4px 0 0;
+  transition: opacity 0.15s ease;
+}
+
+.marks-chart-value {
+  /* bottom: 100% of the bar itself, so it sits right above that bar's
+     true top edge no matter what height "true" turns out to be —
+     doesn't matter if it's not part of the height calculation. */
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: 4px;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--color-ink);
+  white-space: nowrap;
+}
+
+.marks-chart-bar-col:hover .marks-chart-bar,
+.marks-chart-bar-col:focus-visible .marks-chart-bar {
+  opacity: 0.82;
+}
+
+.marks-chart-label {
+  position: absolute;
+  bottom: -22px;
+  max-width: 100%;
+  font-size: 0.68rem;
+  color: var(--color-ink-soft);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.marks-chart-tooltip {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: 8px;
+  background: var(--color-ink);
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  white-space: nowrap;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  z-index: 5;
+  box-shadow: var(--shadow-card);
+  pointer-events: none;
+}
+
+.marks-chart-tooltip .muted { color: #c7d3d9; }
+.marks-chart-tooltip .score-red { color: #ff9b8a; text-decoration: none; }
+
+.marks-chart-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: var(--color-ink);
+}
+
+/* Attendance present/absent proportion bar */
+.attendance-bar {
+  display: flex;
+  height: 10px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--color-border-soft);
+  margin: 4px 0 12px;
+}
+
+.attendance-bar-present { background: var(--color-approve); }
+.attendance-bar-absent { background: var(--color-margin-rule); }
+
+.attendance-legend {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  font-size: 0.82rem;
+  color: var(--color-ink-soft);
+}
+
+.attendance-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.legend-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.legend-dot--green { background: var(--color-approve); }
+.legend-dot--red { background: var(--color-margin-rule); }
 
 /* Alerts */
 .alert {
@@ -427,55 +1017,183 @@ button, input, select, textarea {
   color: var(--color-ink-soft);
 }
 
-/* Landing page / hero */
-.hero-section {
-  background: var(--color-ink);
-  color: #fff;
-  padding: 72px 28px 90px;
-  position: relative;
-  overflow: hidden;
+/* ============================================================
+   Public marketing pages (Home) — plain white navbar over a full
+   navy photo-banner hero, matching the app shell's navy/orange
+   theme instead of a separate palette.
+   ============================================================ */
+.public-shell {
+  background: var(--color-bg);
 }
 
-.hero-inner {
-  max-width: 1100px;
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: 1.1fr 0.9fr;
-  gap: 48px;
+.topbar--public {
+  background: #fff;
+  color: var(--color-ink);
+  padding: 16px 28px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.topbar--public .topbar-brand {
+  color: var(--color-ink);
+}
+.topbar--public .topbar-brand span { color: var(--color-margin-rule); }
+
+.topbar--public .topbar-nav a,
+.topbar--public .topbar-nav button {
+  color: var(--color-ink-soft);
+}
+
+.topbar--public .topbar-nav a:hover,
+.topbar--public .topbar-nav button:hover,
+.topbar--public .topbar-nav a.active {
+  background: rgba(23, 50, 74, 0.07);
+  color: var(--color-ink);
+}
+
+.topbar--public .topbar-toggle {
+  color: var(--color-ink);
+  border-color: rgba(23, 50, 74, 0.2);
+}
+
+.btn-pill-accent {
+  display: inline-flex;
   align-items: center;
+  gap: 7px;
+  /* !important: .topbar-nav a (element+class) outranks a bare
+     .btn-pill-accent class selector on specificity, so without this its
+     transparent background wins and the pill silently disappears. */
+  background: var(--color-margin-rule) !important;
+  color: #fff !important;
+  padding: 10px 20px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.85rem;
 }
 
-@media (max-width: 860px) {
-  .hero-inner { grid-template-columns: 1fr; }
+.btn-pill-accent:hover { background: #e07f0d !important; color: #fff !important; text-decoration: none; }
+
+@media (max-width: 768px) {
+  .topbar--public .topbar-nav { border-top-color: rgba(23, 50, 74, 0.12); }
+}
+
+/* Hero — full-width navy photo banner, matching the reference course
+   platform's layout: dark overlay on a photo, text + CTA on the left. */
+.hero-banner {
+  position: relative;
+  min-height: 420px;
+  display: flex;
+  align-items: center;
+  color: #fff;
+  overflow: hidden;
+  /* Solid gradient fallback — looks intentional even before a photo
+     exists, no "placeholder" state needed. */
+  background: linear-gradient(120deg, #1a2158 0%, #2c3690 100%);
+}
+
+.hero-banner-media {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.hero-banner-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.hero-banner::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(100deg, rgba(26, 33, 88, 0.94) 0%, rgba(26, 33, 88, 0.84) 42%, rgba(26, 33, 88, 0.3) 100%);
+}
+
+.hero-banner-content {
+  position: relative;
+  z-index: 2;
+  max-width: 1100px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 64px 28px;
+}
+
+.hero-banner-content > div {
+  max-width: 560px;
+}
+
+.hero-banner-hint {
+  position: absolute;
+  z-index: 2;
+  right: 18px;
+  bottom: 12px;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.hero-banner-hint code {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+@media (max-width: 640px) {
+  .hero-banner { min-height: 380px; }
+  .hero-banner-content { padding: 44px 16px; }
 }
 
 .hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   font-family: var(--font-mono);
-  font-size: 0.75rem;
-  letter-spacing: 0.14em;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--color-gold);
-  margin-bottom: 14px;
-  display: inline-block;
-}
-
-.hero-inner h1 {
   color: #fff;
-  font-size: 2.6rem;
-  line-height: 1.15;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  padding: 7px 14px;
+  border-radius: 999px;
   margin-bottom: 18px;
 }
 
-.hero-inner h1 em {
+/* Same pill shape as .hero-eyebrow, but for light-background pages
+   (Help, Contact) instead of the navy hero banner. */
+.page-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-margin-rule);
+  background: #fff;
+  border: 1px solid var(--color-border);
+  padding: 7px 14px;
+  border-radius: 999px;
+  margin-bottom: 18px;
+}
+
+.hero-banner h1 {
+  color: #fff;
+  font-size: 2.7rem;
+  line-height: 1.14;
+  margin-bottom: 16px;
+}
+
+.hero-banner h1 em {
   font-style: normal;
   color: var(--color-gold);
 }
 
 .hero-sub {
-  color: #c7d3d9;
+  color: rgba(255, 255, 255, 0.84);
   font-size: 1.05rem;
   max-width: 480px;
-  margin-bottom: 28px;
+  margin-bottom: 26px;
 }
 
 .hero-actions {
@@ -486,44 +1204,111 @@ button, input, select, textarea {
 
 .hero-actions .btn-ghost {
   color: #fff;
-  border-color: rgba(255,255,255,0.3);
+  border-color: rgba(255, 255, 255, 0.4);
 }
 
-/* Decorative mark-sheet mock on the hero's right side */
-.hero-mock {
-  background: var(--color-surface);
-  border-radius: 8px;
-  padding: 22px;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.35);
-  transform: rotate(2deg);
-  color: var(--color-ink);
+/* Stat strip just under the hero, in the page's normal flow */
+.stat-strip-section {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 40px 28px 0;
 }
 
-.hero-mock-header {
+.stat-strip {
+  background: #fff;
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  box-shadow: var(--shadow-card);
+  padding: 22px 12px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.stat-strip-item {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  border-bottom: 2px solid var(--color-ink);
-  padding-bottom: 10px;
-  margin-bottom: 12px;
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--color-ink-soft);
+  gap: 12px;
+  padding: 8px 16px;
+  border-right: 1px solid var(--color-border-soft);
 }
 
-.hero-mock-row {
+.stat-strip-item:last-child { border-right: none; }
+
+.stat-strip-icon {
+  flex-shrink: 0;
   display: flex;
-  justify-content: space-between;
-  padding: 8px 0;
-  border-bottom: 1px dashed var(--color-border);
-  font-size: 0.88rem;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(247, 148, 29, 0.12);
+  color: var(--color-margin-rule);
 }
 
-.hero-mock-row:last-child { border-bottom: none; }
+.stat-strip-label {
+  font-size: 0.82rem;
+  color: var(--color-ink-soft);
+  line-height: 1.3;
+}
 
-.hero-mock-row .score-red { font-size: 0.95rem; }
+@media (max-width: 768px) {
+  .stat-strip-section { padding: 28px 16px 0; }
+  .stat-strip {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px 0;
+  }
+  .stat-strip-item:nth-child(odd) { border-right: 1px solid var(--color-border-soft); }
+  .stat-strip-item:nth-child(2) { border-right: none; }
+}
+
+@media (max-width: 480px) {
+  .stat-strip { grid-template-columns: 1fr; }
+  .stat-strip-item { border-right: none !important; border-bottom: 1px solid var(--color-border-soft); }
+  .stat-strip-item:last-child { border-bottom: none; }
+}
+
+/* How-it-works steps */
+.steps-section {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 60px 28px 8px;
+}
+
+.steps-section h2 {
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.step-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+  margin-top: 32px;
+}
+
+.step-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+  padding: 24px 22px 22px;
+}
+
+.step-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--color-ink);
+  color: #fff;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.85rem;
+  margin-bottom: 14px;
+}
 
 /* Feature section */
 .features-section {
@@ -552,9 +1337,9 @@ button, input, select, textarea {
 .feature-card {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
-  border-top: 3px solid var(--color-margin-rule);
   border-radius: var(--radius);
-  padding: 22px 20px;
+  box-shadow: var(--shadow-card);
+  padding: 24px 22px;
 }
 
 .feature-card .feature-icon {
@@ -567,18 +1352,293 @@ button, input, select, textarea {
   display: block;
 }
 
-.cta-band {
-  background: var(--color-surface-ruled);
+/* Footer — the one place admin links live now; students get the navbar
+   and the whole rest of the page. */
+.site-footer {
   border-top: 1px solid var(--color-border);
-  border-bottom: 1px solid var(--color-border);
-  padding: 56px 28px;
-  text-align: center;
+  padding: 28px;
 }
 
-.cta-band h2 { margin-bottom: 10px; }
+.site-footer-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 14px 24px;
+}
+
+.site-footer-links {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+}
+
+.site-footer-links a {
+  color: var(--color-ink-soft);
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.site-footer-links a:hover {
+  color: var(--color-ink);
+  text-decoration: none;
+}
+
+.site-footer-divider {
+  width: 1px;
+  height: 14px;
+  background: var(--color-border);
+}
+
+/* Static content pages (Help, Contact) */
+.static-page {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 48px 28px;
+}
+
+.static-page--narrow {
+  max-width: 560px;
+}
+
+.static-page-header {
+  margin-bottom: 28px;
+}
+
+.static-page-header h1 {
+  margin-top: 12px;
+}
+
+.help-steps {
+  list-style: none;
+  counter-reset: help-step;
+  margin: 0;
+  padding: 0;
+}
+
+.help-steps li {
+  counter-increment: help-step;
+  position: relative;
+  padding: 0 0 20px 40px;
+  border-left: 2px solid var(--color-border);
+  margin-left: 15px;
+}
+
+.help-steps li:last-child {
+  border-left-color: transparent;
+  padding-bottom: 0;
+}
+
+.help-steps li::before {
+  content: counter(help-step);
+  position: absolute;
+  left: -15px;
+  top: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-ink);
+  color: #fff;
+  border-radius: 50%;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.help-steps strong {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.help-cta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.help-cta h3 { margin-bottom: 2px; }
+
+/* FAQ accordion — native <details>/<summary>, no JS needed */
+.faq-item {
+  border-bottom: 1px solid var(--color-border-soft);
+  padding: 14px 0;
+}
+
+.faq-item:last-child { border-bottom: none; }
+
+.faq-item summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--color-ink);
+  list-style: none;
+}
+
+.faq-item summary::-webkit-details-marker { display: none; }
+
+.faq-item summary::before {
+  content: '+';
+  display: inline-block;
+  width: 18px;
+  color: var(--color-margin-rule);
+  font-weight: 700;
+}
+
+.faq-item[open] summary::before { content: '−'; }
+
+.faq-item p { margin: 10px 0 0 18px; }
+
+/* Contact page */
+.contact-card {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.contact-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.contact-value {
+  display: block;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.contact-value:hover { color: var(--color-margin-rule); }
+
+@media (max-width: 640px) {
+  .static-page { padding: 32px 16px; }
+}
 
 .muted { color: var(--color-ink-soft); }
 .text-sm { font-size: 0.85rem; }
 .spacer-top { margin-top: 20px; }
-.flex-between { display: flex; justify-content: space-between; align-items: center; }
-.flex-row { display: flex; gap: 10px; align-items: center; }
+.flex-between { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+.flex-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+
+/* Table that becomes a stack of record cards on narrow screens */
+.table-card { padding: 0; overflow-x: auto; }
+
+/* ============================================================
+   Responsive
+   ============================================================ */
+
+/* Tablet and down: tighten shell spacing */
+@media (max-width: 768px) {
+  .topbar {
+    flex-wrap: wrap;
+    padding: 12px 16px;
+  }
+
+  .topbar-head { width: 100%; }
+
+  .topbar-toggle { display: inline-flex; }
+
+  .topbar-nav {
+    display: none;
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 2px;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255,255,255,0.12);
+  }
+
+  .topbar-nav.open { display: flex; }
+
+  .topbar-nav a, .topbar-nav button {
+    width: 100%;
+    text-align: left;
+    padding: 12px 10px;
+  }
+
+  .topbar-nav .btn {
+    justify-content: flex-start;
+  }
+
+  .page-body { padding: 20px 16px; }
+
+  .sheet-card {
+    padding: 20px 18px 20px 16px;
+  }
+
+  h1 { font-size: 1.55rem; }
+  h2 { font-size: 1.25rem; }
+
+  .hero-section { padding: 20px 16px 0; }
+  .hero-inner { padding: 18px 0 44px; }
+  .hero-inner h1 { font-size: 2rem; }
+  .hero-section::before { width: 220px; height: 220px; top: -110px; left: -100px; }
+  .hero-section::after { width: 180px; height: 180px; }
+  .stat-strip { padding: 18px 10px; }
+  .features-section { padding: 44px 16px; }
+  .site-footer { padding: 24px 16px; }
+  .site-footer-inner { justify-content: center; text-align: center; }
+}
+
+/* Phones: auth cards, stat grid, and tables need extra care */
+@media (max-width: 640px) {
+  .centered-page { padding: 16px; }
+
+  .auth-card { max-width: 100%; }
+
+  .stat-grid { grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; }
+
+  .page-header { align-items: stretch; }
+  .page-header > .btn { align-self: flex-start; }
+
+  /* Record tables stack into cards instead of scrolling sideways */
+  .table-card { overflow-x: visible; }
+
+  .mark-table thead { display: none; }
+
+  .mark-table, .mark-table tbody, .mark-table tr, .mark-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .mark-table tr {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .mark-table tr:last-child { border-bottom: none; }
+
+  .mark-table td {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 7px 0;
+    border-bottom: 1px dashed var(--color-border-soft);
+    text-align: right;
+  }
+
+  .mark-table td:last-child { border-bottom: none; }
+
+  .mark-table td::before {
+    content: attr(data-label);
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-ink-soft);
+    text-align: left;
+    flex-shrink: 0;
+  }
+
+  .mark-table td:empty::before { content: none; }
+
+  .marks-input { width: 100px; }
+}

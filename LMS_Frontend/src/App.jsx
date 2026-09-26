@@ -21,6 +21,8 @@ import StudentRegister from './pages/student/Register';
 import StudentDashboard from './pages/student/Dashboard';
 
 import Home from './pages/public/Home';
+import Help from './pages/public/Help';
+import Contact from './pages/public/Contact';
 
 export default function App() {
   return (
@@ -31,6 +33,8 @@ export default function App() {
           <Routes>
             {/* Public */}
             <Route path="/" element={<Home />} />
+            <Route path="/help" element={<Help />} />
+            <Route path="/contact" element={<Contact />} />
 
             {/* Admin */}
             <Route path="/admin/register" element={<AdminRegister />} />

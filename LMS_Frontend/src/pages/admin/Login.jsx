@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAdminAuth } from '../../context/AdminAuthContext';
+import PublicNavbar from '../../components/PublicNavbar';
 
 export default function AdminLogin() {
   const { login } = useAdminAuth();
@@ -25,7 +26,9 @@ export default function AdminLogin() {
   }
 
   return (
-    <div className="centered-page">
+    <div className="app-shell">
+      <PublicNavbar />
+      <div className="centered-page">
       <div className="sheet-card auth-card">
         <span className="auth-eyebrow">Tuition admin</span>
         <h1>Log in</h1>
@@ -66,6 +69,7 @@ export default function AdminLogin() {
         <p className="text-sm">
           Student? <Link to="/student/login">Log in as a student</Link>
         </p>
+      </div>
       </div>
     </div>
   );
