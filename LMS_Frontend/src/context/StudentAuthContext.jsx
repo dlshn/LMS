@@ -12,10 +12,9 @@ function loadStudentFromStorage() {
 }
 
 export function StudentAuthProvider({ children }) {
-  const [student, setStudent] = useState(loadStudentFromStorage); 
+  const [student, setStudent] = useState(loadStudentFromStorage);
 
-  async function login(payload) {
-    const { data } = await endpoints.loginStudent(payload);
+  function persist(data) {
     localStorage.setItem('studentAccessToken', data.accessToken);
     localStorage.setItem('studentRefreshToken', data.refreshToken);
     localStorage.setItem('studentFullName', data.student.fullName);
@@ -25,6 +24,20 @@ export function StudentAuthProvider({ children }) {
       fullName: data.student.fullName,
       studentNumber: data.student.studentNumber,
     });
+  }
+
+  async function login(payload) {
+    const { data } = await endpoints.loginStudent(payload);
+    persist(data);
+    return data;
+  }
+
+  // Self-registration: a student claims the roster entry their admin
+  // already created, using the class join code, and picks their own
+  // username/password. On success they're logged in immediately.
+  async function registerSelf(payload) {
+    const { data } = await endpoints.registerStudentSelf(payload);
+    persist(data);
     return data;
   }
 
@@ -37,7 +50,7 @@ export function StudentAuthProvider({ children }) {
   }
 
   return (
-    <StudentAuthContext.Provider value={{ student, login, logout }}>
+    <StudentAuthContext.Provider value={{ student, login, registerSelf, logout }}>
       {children}
     </StudentAuthContext.Provider>
   );

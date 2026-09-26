@@ -4,6 +4,7 @@ import api from './client';
 export const registerAdmin = (data) => api.post('/api/auth/register', data);
 export const loginAdmin = (data) => api.post('/api/auth/login', data);
 export const loginStudent = (data) => api.post('/api/auth/student/login', data);
+export const registerStudentSelf = (data) => api.post('/api/auth/student/register', data);
 export const refreshAdminToken = (refreshToken) =>
   api.post('/api/auth/refresh', { refreshToken });
 export const refreshStudentToken = (refreshToken) =>
@@ -13,6 +14,9 @@ export const refreshStudentToken = (refreshToken) =>
 export const registerStudent = (data) => api.post('/api/students', data);
 export const getAllStudents = () => api.get('/api/students');
 export const getStudentById = (id) => api.get(`/api/students/${id}`);
+
+// --- Students (student, requires student token) ---
+export const getMyProfile = () => api.get('/api/students/me', { useStudentAuth: true });
 export const updateStudent = (id, data) => api.patch(`/api/students/${id}`, data);
 export const deleteStudent = (id) => api.delete(`/api/students/${id}`);
 
@@ -42,6 +46,3 @@ export const uploadNote = (formData) =>
     headers: { 'Content-Type': 'multipart/form-data' },
   });
 export const getAllNotes = () => api.get('/api/notes');
-
-// --- Public (no auth) ---
-export const getPublicResultByNumber = (studentNumber) => api.get(`/api/public/results/${studentNumber}`);

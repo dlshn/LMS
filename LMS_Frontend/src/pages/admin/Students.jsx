@@ -1,18 +1,18 @@
 import { useEffect, useState } from 'react';
 import AdminLayout from '../../components/AdminLayout';
 import * as endpoints from '../../api/endpoints';
+import { useConfirm } from '../../context/ConfirmDialogContext';
 
 const emptyForm = {
   studentNumber: '',
   fullName: '',
-  username: '',
-  password: '',
   school: '',
   phone: '',
   parentPhone: '',
 };
 
 export default function Students() {
+  const confirm = useConfirm();
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -51,8 +51,6 @@ export default function Students() {
     setForm({
       studentNumber: student.studentNumber,
       fullName: student.fullName,
-      username: student.username,
-      password: '',
       school: student.school || '',
       phone: student.phone || '',
       parentPhone: student.parentPhone || '',
@@ -74,7 +72,10 @@ export default function Students() {
           parentPhone: form.parentPhone,
         });
       } else {
-        await endpoints.registerStudent(form);
+        await endpoints.registerStudent({
+          studentNumber: form.studentNumber,
+          fullName: form.fullName,
+        });
       }
       setShowForm(false);
       await loadStudents();
@@ -86,9 +87,13 @@ export default function Students() {
   }
 
   async function handleDelete(student) {
-    if (!confirm(`Delete ${student.fullName}? Their attendance and marks will be deleted too. This cannot be undone.`)) {
-      return;
-    }
+    const ok = await confirm({
+      title: `Delete ${student.fullName}?`,
+      message: 'Their attendance and marks will be deleted too. This cannot be undone.',
+      confirmLabel: 'Delete',
+      danger: true,
+    });
+    if (!ok) return;
     try {
       await endpoints.deleteStudent(student.id);
       await loadStudents();
@@ -110,7 +115,13 @@ export default function Students() {
 
       {showForm && (
         <div className="sheet-card spacer-top" style={{ marginBottom: 20 }}>
-          <h3>{editingId ? 'Edit student' : 'Register a new student'}</h3>
+          <h3>{editingId ? 'Edit student' : 'Add a new student'}</h3>
+          {!editingId && (
+            <p className="muted text-sm">
+              This just adds them to your roster. They'll finish creating their own login using their
+              student number and your class join code — see your dashboard for the code.
+            </p>
+          )}
           <form onSubmit={handleSubmit}>
             <div className="field">
               <label>Full name</label>
@@ -121,56 +132,39 @@ export default function Students() {
               />
             </div>
 
-            {!editingId && (
+            {!editingId ? (
+              <div className="field">
+                <label>Student number</label>
+                <input
+                  value={form.studentNumber}
+                  onChange={(e) => updateField('studentNumber', e.target.value)}
+                  placeholder="S001"
+                  required
+                />
+              </div>
+            ) : (
               <>
                 <div className="field">
-                  <label>Student number</label>
-                  <input
-                    value={form.studentNumber}
-                    onChange={(e) => updateField('studentNumber', e.target.value)}
-                    placeholder="S001"
-                    required
-                  />
+                  <label>School</label>
+                  <input value={form.school} onChange={(e) => updateField('school', e.target.value)} />
                 </div>
                 <div className="field">
-                  <label>Username (for student login)</label>
-                  <input
-                    value={form.username}
-                    onChange={(e) => updateField('username', e.target.value)}
-                    required
-                  />
+                  <label>Phone</label>
+                  <input value={form.phone} onChange={(e) => updateField('phone', e.target.value)} />
                 </div>
                 <div className="field">
-                  <label>Password</label>
+                  <label>Parent's phone</label>
                   <input
-                    type="password"
-                    value={form.password}
-                    onChange={(e) => updateField('password', e.target.value)}
-                    required
+                    value={form.parentPhone}
+                    onChange={(e) => updateField('parentPhone', e.target.value)}
                   />
                 </div>
               </>
             )}
 
-            <div className="field">
-              <label>School</label>
-              <input value={form.school} onChange={(e) => updateField('school', e.target.value)} />
-            </div>
-            <div className="field">
-              <label>Phone</label>
-              <input value={form.phone} onChange={(e) => updateField('phone', e.target.value)} />
-            </div>
-            <div className="field">
-              <label>Parent's phone</label>
-              <input
-                value={form.parentPhone}
-                onChange={(e) => updateField('parentPhone', e.target.value)}
-              />
-            </div>
-
             <div className="flex-row">
               <button type="submit" className="btn btn-primary" disabled={submitting}>
-                {submitting ? 'Saving...' : editingId ? 'Save changes' : 'Register student'}
+                {submitting ? 'Saving...' : editingId ? 'Save changes' : 'Add student'}
               </button>
               <button type="button" className="btn btn-ghost" onClick={() => setShowForm(false)}>
                 Cancel
@@ -187,7 +181,7 @@ export default function Students() {
           <p>No students yet. Add your first one to get started.</p>
         </div>
       ) : (
-        <div className="sheet-card" style={{ padding: 0 }}>
+        <div className="sheet-card table-card">
           <table className="mark-table">
             <thead>
               <tr>
@@ -195,16 +189,24 @@ export default function Students() {
                 <th>Name</th>
                 <th>School</th>
                 <th>Phone</th>
+                <th>Login</th>
                 <th></th>
               </tr>
             </thead>
             <tbody>
               {students.map((s) => (
                 <tr key={s.id}>
-                  <td className="student-number">{s.studentNumber}</td>
-                  <td>{s.fullName}</td>
-                  <td className="muted">{s.school || '—'}</td>
-                  <td className="muted">{s.phone || '—'}</td>
+                  <td className="student-number" data-label="Student No.">{s.studentNumber}</td>
+                  <td data-label="Name">{s.fullName}</td>
+                  <td className="muted" data-label="School">{s.school || '—'}</td>
+                  <td className="muted" data-label="Phone">{s.phone || '—'}</td>
+                  <td data-label="Login">
+                    {s.isActivated ? (
+                      <span className="stamp stamp-present">Registered</span>
+                    ) : (
+                      <span className="stamp stamp-draft">Pending</span>
+                    )}
+                  </td>
                   <td>
                     <div className="flex-row">
                       <button className="btn btn-ghost btn-sm" onClick={() => startEdit(s)}>

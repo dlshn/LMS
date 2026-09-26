@@ -1,48 +1,39 @@
 const prisma = require('../utils/prisma');
-const { hashPassword } = require('../utils/hash');
 
+// Admin creates the roster entry only — studentNumber + fullName. The
+// student later claims this entry themselves via the class join code
+// (see auth.controller#registerStudentSelf), setting their own
+// username/password and contact details at that point.
 async function registerStudent(req, res) {
   try {
-    const { studentNumber, fullName, username, password, school, phone, parentPhone } = req.body;
+    const { studentNumber, fullName } = req.body;
 
-    if (!studentNumber || !fullName || !username || !password) {
-      return res.status(400).json({ error: 'studentNumber, fullName, username and password are required' });
+    if (!studentNumber || !fullName) {
+      return res.status(400).json({ error: 'studentNumber and fullName are required' });
     }
 
     const tuitionClassId = req.admin.tuitionClassId;
-
-    const existingUsername = await prisma.student.findUnique({ where: { username } });
-    if (existingUsername) {
-      return res.status(409).json({ error: 'Username already taken' });
-    }
 
     const existingNumber = await prisma.student.findUnique({ where: { studentNumber } });
     if (existingNumber) {
       return res.status(409).json({ error: 'Student number already in use' });
     }
 
-    const passwordHash = await hashPassword(password);
-
     const student = await prisma.student.create({
       data: {
         tuitionClassId,
         studentNumber,
         fullName,
-        username,
-        passwordHash,
-        school,
-        phone,
-        parentPhone,
       },
     });
 
     res.status(201).json({
-      message: 'Student registered successfully',
+      message: 'Student added. Share your class join code with them so they can complete registration.',
       student: {
         id: student.id,
         studentNumber: student.studentNumber,
         fullName: student.fullName,
-        username: student.username,
+        isActivated: student.isActivated,
       },
     });
   } catch (error) {
@@ -65,6 +56,7 @@ async function getAllStudents(req, res) {
         school: true,
         phone: true,
         parentPhone: true,
+        isActivated: true,
         createdAt: true,
       },
       orderBy: { fullName: 'asc' },
@@ -92,6 +84,7 @@ async function getStudentById(req, res) {
         school: true,
         phone: true,
         parentPhone: true,
+        isActivated: true,
         createdAt: true,
       },
     });
@@ -163,4 +156,36 @@ async function deleteStudent(req, res) {
   }
 }
 
-module.exports = { registerStudent, getAllStudents, getStudentById, updateStudent, deleteStudent };
+// A student's own profile — their dashboard needs their school and their
+// tuition class's name, neither of which the login/results endpoints return.
+async function getMyProfile(req, res) {
+  try {
+    const studentId = req.student.studentId;
+
+    const student = await prisma.student.findUnique({
+      where: { id: studentId },
+      select: {
+        fullName: true,
+        studentNumber: true,
+        school: true,
+        tuitionClass: { select: { name: true } },
+      },
+    });
+
+    if (!student) {
+      return res.status(404).json({ error: 'Student not found' });
+    }
+
+    res.json({
+      fullName: student.fullName,
+      studentNumber: student.studentNumber,
+      school: student.school,
+      tuitionClassName: student.tuitionClass.name,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Something went wrong while fetching your profile' });
+  }
+}
+
+module.exports = { registerStudent, getAllStudents, getStudentById, updateStudent, deleteStudent, getMyProfile };

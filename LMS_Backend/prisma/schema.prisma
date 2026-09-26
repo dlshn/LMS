@@ -26,6 +26,7 @@ enum ExamStatus {
 model TuitionClass {
   id         String   @id @default(uuid())
   name       String
+  joinCode   String   @unique
   isApproved Boolean  @default(false)
   createdAt  DateTime @default(now())
 
@@ -33,6 +34,9 @@ model TuitionClass {
   students    Student[]
   attendances Attendance[]
   exams       Exam[]
+  notices     Notice[]
+  videos      Video[]
+  notes       Note[]
 }
 
 model Admin {
@@ -55,8 +59,12 @@ model Student {
   school         String?
   phone          String?
   parentPhone    String?
-  username       String       @unique
-  passwordHash   String
+  // username/passwordHash are null until the student self-registers with the
+  // class join code (see auth.controller#registerStudentSelf). isActivated
+  // tracks that explicitly rather than inferring it from username presence.
+  username       String?      @unique
+  passwordHash   String?
+  isActivated    Boolean      @default(false)
   createdAt      DateTime     @default(now())
 
   attendances Attendance[]
@@ -90,6 +98,49 @@ model Exam {
   createdAt      DateTime   @default(now())
 
   marks Mark[]
+}
+
+// A short admin-posted announcement, shown to that class's students until
+// it expires. No manual cleanup needed — queries just filter on expiresAt.
+model Notice {
+  id             String       @id @default(uuid())
+  tuitionClassId String
+  tuitionClass   TuitionClass @relation(fields: [tuitionClassId], references: [id])
+  message        String
+  expiresAt      DateTime
+  createdAt      DateTime     @default(now())
+
+  @@index([tuitionClassId, expiresAt])
+}
+
+// A recorded class session, linked as an unlisted YouTube URL by the admin.
+// Unlisted (not Private) is the only practical option — Private would require
+// inviting every student's Google account individually.
+model Video {
+  id             String       @id @default(uuid())
+  tuitionClassId String
+  tuitionClass   TuitionClass @relation(fields: [tuitionClassId], references: [id])
+  title          String
+  youtubeUrl     String
+  createdAt      DateTime     @default(now())
+
+  @@index([tuitionClassId, createdAt])
+}
+
+// An admin-uploaded file (PDF, image, slides) stored in Cloudflare R2.
+// fileKey is the R2 object key (used to delete/regenerate a URL later);
+// fileUrl is what the browser actually fetches.
+model Note {
+  id             String       @id @default(uuid())
+  tuitionClassId String
+  tuitionClass   TuitionClass @relation(fields: [tuitionClassId], references: [id])
+  title          String
+  fileKey        String
+  fileUrl        String
+  fileType       String
+  uploadedAt     DateTime     @default(now())
+
+  @@index([tuitionClassId, uploadedAt])
 }
 
 model Mark {

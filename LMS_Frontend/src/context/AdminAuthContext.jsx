@@ -9,8 +9,9 @@ function loadAdminFromStorage() {
   const adminName = localStorage.getItem('adminName');
   const tuitionClassName = localStorage.getItem('tuitionClassName');
   const tuitionClassId = localStorage.getItem('tuitionClassId');
+  const joinCode = localStorage.getItem('tuitionClassJoinCode');
   if (!accessToken) return null;
-  return { accessToken, adminName, tuitionClassName, tuitionClassId };
+  return { accessToken, adminName, tuitionClassName, tuitionClassId, joinCode };
 }
 
 export function AdminAuthProvider({ children }) {
@@ -21,15 +22,17 @@ export function AdminAuthProvider({ children }) {
     localStorage.setItem('adminRefreshToken', refreshToken);
     localStorage.setItem('adminName', adminInfo.name);
 
-    // Register returns tuitionClass directly; login doesn't, so we
-    // read it out of the token payload instead (see api/jwt.js).
+    // Both register and login now return tuitionClass directly; fall back
+    // to the token payload for older cached sessions.
     const tuitionClassId = tuitionClass?.id || decodeJwtPayload(accessToken)?.tuitionClassId;
     const tuitionClassName = tuitionClass?.name || localStorage.getItem('tuitionClassName');
+    const joinCode = tuitionClass?.joinCode || localStorage.getItem('tuitionClassJoinCode');
 
     if (tuitionClassId) localStorage.setItem('tuitionClassId', tuitionClassId);
     if (tuitionClassName) localStorage.setItem('tuitionClassName', tuitionClassName);
+    if (joinCode) localStorage.setItem('tuitionClassJoinCode', joinCode);
 
-    setAdmin({ accessToken, adminName: adminInfo.name, tuitionClassId, tuitionClassName });
+    setAdmin({ accessToken, adminName: adminInfo.name, tuitionClassId, tuitionClassName, joinCode });
   }
 
   async function register(payload) {
@@ -50,6 +53,7 @@ export function AdminAuthProvider({ children }) {
     localStorage.removeItem('adminName');
     localStorage.removeItem('tuitionClassId');
     localStorage.removeItem('tuitionClassName');
+    localStorage.removeItem('tuitionClassJoinCode');
     setAdmin(null);
   }
 

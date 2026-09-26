@@ -15,6 +15,7 @@ import MarksEntry from './pages/admin/MarksEntry';
 import Notes from './pages/admin/Notes';
 
 import StudentLogin from './pages/student/Login';
+import StudentRegister from './pages/student/Register';
 import StudentDashboard from './pages/student/Dashboard';
 
 import Home from './pages/public/Home';
@@ -83,6 +84,7 @@ export default function App() {
 
             {/* Student */}
             <Route path="/student/login" element={<StudentLogin />} />
+            <Route path="/student/register" element={<StudentRegister />} />
             <Route
               path="/student/dashboard"
               element={
