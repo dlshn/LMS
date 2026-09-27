@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import PublicNavbar from '../../components/PublicNavbar';
 import SiteFooter from '../../components/SiteFooter';
-import { IconGraduationCap, IconLock, IconBolt, IconLayers, IconClock } from '../../components/icons';
+import { IconGraduationCap, IconShieldCheck, IconTrendingUp, IconBookOpen, IconClock } from '../../components/icons';
 
 export default function Home() {
   return (
@@ -56,20 +56,20 @@ export default function Home() {
       <div className="stat-strip-section">
         <div className="stat-strip">
           <div className="stat-strip-item">
-            <span className="stat-strip-icon" aria-hidden="true"><IconLock /></span>
-            <span className="stat-strip-label">Your Own<br />Login</span>
+            <span className="stat-strip-icon" aria-hidden="true"><IconShieldCheck /></span>
+            <span className="stat-strip-label">Private &amp;<br />Secure Login</span>
           </div>
           <div className="stat-strip-item">
-            <span className="stat-strip-icon" aria-hidden="true"><IconBolt /></span>
-            <span className="stat-strip-label">Instant<br />Results</span>
+            <span className="stat-strip-icon" aria-hidden="true"><IconTrendingUp /></span>
+            <span className="stat-strip-label">Live<br />Results</span>
           </div>
           <div className="stat-strip-item">
-            <span className="stat-strip-icon" aria-hidden="true"><IconLayers /></span>
-            <span className="stat-strip-label">Shared<br />Notes</span>
+            <span className="stat-strip-icon" aria-hidden="true"><IconBookOpen /></span>
+            <span className="stat-strip-label">Notes &amp;<br />Recordings</span>
           </div>
           <div className="stat-strip-item">
             <span className="stat-strip-icon" aria-hidden="true"><IconClock /></span>
-            <span className="stat-strip-label">24/7<br />Access</span>
+            <span className="stat-strip-label">Anytime<br />Access</span>
           </div>
         </div>
       </div>

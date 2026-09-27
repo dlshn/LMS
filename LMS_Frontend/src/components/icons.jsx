@@ -184,6 +184,33 @@ export function IconImage(props) {
   );
 }
 
+export function IconShieldCheck(props) {
+  return (
+    <svg {...common} width="20" height="20" aria-hidden="true" {...props}>
+      <path d="M12 2l8 3v6c0 5-3.4 8.4-8 11-4.6-2.6-8-6-8-11V5z" />
+      <path d="M8.5 12l2.5 2.5L16 9" />
+    </svg>
+  );
+}
+
+export function IconTrendingUp(props) {
+  return (
+    <svg {...common} width="20" height="20" aria-hidden="true" {...props}>
+      <polyline points="3 17 9 11 13 15 21 6" />
+      <polyline points="14 6 21 6 21 13" />
+    </svg>
+  );
+}
+
+export function IconBookOpen(props) {
+  return (
+    <svg {...common} width="20" height="20" aria-hidden="true" {...props}>
+      <path d="M12 6c-2-1.5-5-2-8-1.5v13c3-0.5 6 0 8 1.5 2-1.5 5-2 8-1.5v-13c-3-0.5-6 0-8 1.5z" />
+      <line x1="12" y1="6" x2="12" y2="19" />
+    </svg>
+  );
+}
+
 export function IconEyeOff(props) {
   return (
     <svg {...common} width="18" height="18" aria-hidden="true" {...props}>
