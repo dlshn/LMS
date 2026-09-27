@@ -1206,6 +1206,9 @@ button, input, select, textarea {
   color: #fff;
   border-color: rgba(255, 255, 255, 0.4);
 }
+.hero-actions .btn-ghost:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
 
 /* Stat strip just under the hero, in the page's normal flow */
 .stat-strip-section {
