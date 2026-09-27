@@ -22,6 +22,7 @@ export default function StudentDashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [showAllResults, setShowAllResults] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     Promise.all([
@@ -43,6 +44,7 @@ export default function StudentDashboard() {
   }, []);
 
   async function handleLogout() {
+    setMenuOpen(false);
     const ok = await confirm({
       title: 'Log out?',
       message: "You'll need to log in again to access your dashboard.",
@@ -90,10 +92,19 @@ export default function StudentDashboard() {
           <div className="topbar-brand">
             My<span>Class</span>.edu.lk
           </div>
+          <button
+            type="button"
+            className="topbar-toggle"
+            aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={menuOpen}
+            onClick={() => setMenuOpen((open) => !open)}
+          >
+            {menuOpen ? '✕' : '☰'}
+          </button>
         </div>
-        <nav className="topbar-nav open">
-          <a href="#notes">Notes</a>
-          <a href="#recordings">Recordings</a>
+        <nav className={`topbar-nav ${menuOpen ? 'open' : ''}`}>
+          <a href="#notes" onClick={() => setMenuOpen(false)}>Notes</a>
+          <a href="#recordings" onClick={() => setMenuOpen(false)}>Recordings</a>
           <NoticeBell />
           <button onClick={handleLogout}>Log out</button>
         </nav>
