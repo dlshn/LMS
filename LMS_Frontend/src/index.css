@@ -896,7 +896,7 @@ button, input, select, textarea {
 .marks-chart-plot {
   position: relative;
   height: 200px;
-  margin: 8px 0 30px 30px;
+  margin: 8px 0 46px 30px;
 }
 
 .marks-chart-gridline {
@@ -968,15 +968,20 @@ button, input, select, textarea {
   opacity: 0.82;
 }
 
+/* Angled instead of horizontal — a horizontal label has to fit within
+   one bar's width and gets ellipsis-truncated the moment there are
+   more than a handful of bars (worse on narrow mobile columns); tilting
+   it lets the full date read on an angle without colliding with its
+   neighbors. */
 .marks-chart-label {
   position: absolute;
-  bottom: -22px;
-  max-width: 100%;
-  font-size: 0.68rem;
+  top: calc(100% + 6px);
+  right: 50%;
+  transform: rotate(-40deg);
+  transform-origin: top right;
+  font-size: 0.65rem;
   color: var(--color-ink-soft);
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .marks-chart-tooltip {
