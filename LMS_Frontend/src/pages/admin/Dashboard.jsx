@@ -139,7 +139,7 @@ export default function AdminDashboard() {
             </div>
           </div>
 
-          <div className="dashboard-grid">
+          <div className="dashboard-grid" style={{ alignItems: 'stretch' }}>
             <div className="sheet-card" style={{ display: 'flex', flexDirection: 'column' }}>
               <h3>Your class join code</h3>
               <p className="muted text-sm">
