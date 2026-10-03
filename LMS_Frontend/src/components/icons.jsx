@@ -211,6 +211,35 @@ export function IconBookOpen(props) {
   );
 }
 
+export function IconUsers(props) {
+  return (
+    <svg {...common} width="22" height="22" aria-hidden="true" {...props}>
+      <circle cx="9" cy="8" r="3.5" />
+      <path d="M2.5 20c0-3.3 2.9-6 6.5-6s6.5 2.7 6.5 6" />
+      <circle cx="17" cy="9" r="2.8" />
+      <path d="M15 14.2c2.6.4 4.5 2.4 4.5 5.3" />
+    </svg>
+  );
+}
+
+export function IconEdit(props) {
+  return (
+    <svg {...common} width="22" height="22" aria-hidden="true" {...props}>
+      <path d="M12 20h9" />
+      <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z" />
+    </svg>
+  );
+}
+
+export function IconCopy(props) {
+  return (
+    <svg {...common} width="16" height="16" aria-hidden="true" {...props}>
+      <rect x="9" y="9" width="12" height="12" rx="2" />
+      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+    </svg>
+  );
+}
+
 export function IconEyeOff(props) {
   return (
     <svg {...common} width="18" height="18" aria-hidden="true" {...props}>

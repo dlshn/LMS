@@ -1572,6 +1572,82 @@ button, input, select, textarea {
 .flex-between { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
 .flex-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 
+/* Admin dashboard: join code chip, poster row, and quick-action tiles */
+.join-code-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: auto;
+  padding: 14px 18px;
+  background: var(--color-surface-ruled);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius);
+}
+
+.join-code-box-value {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 1.5rem;
+  letter-spacing: 0.1em;
+  color: var(--color-margin-rule);
+}
+
+.join-code-copy-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-ink);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.join-code-copy-btn:hover { background: #fff; border-color: var(--color-ink-soft); }
+
+.admin-poster-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-top: auto;
+  padding-top: 12px;
+}
+
+.quick-actions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.quick-action-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 16px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  color: var(--color-ink);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.88rem;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.quick-action-tile svg { color: var(--color-margin-rule); }
+
+.quick-action-tile:hover {
+  border-color: var(--color-margin-rule);
+  box-shadow: var(--shadow-card);
+}
+
 /* Table that becomes a stack of record cards on narrow screens */
 .table-card { padding: 0; overflow-x: auto; }
 
