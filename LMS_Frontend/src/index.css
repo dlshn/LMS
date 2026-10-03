@@ -676,7 +676,14 @@ button, input, select, textarea {
   display: block;
 }
 
-.poster-hero-content h1 { margin: 0 0 6px; }
+.poster-hero-content h1 { margin: 0 0 4px; }
+
+.poster-hero-class {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--color-margin-rule);
+  margin: 0 0 6px;
+}
 
 @media (max-width: 600px) {
   .poster-hero { flex-direction: column; align-items: stretch; }

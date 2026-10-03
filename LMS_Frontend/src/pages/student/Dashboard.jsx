@@ -118,8 +118,8 @@ export default function StudentDashboard() {
           )}
           <div className={profile?.posterImageUrl ? 'poster-hero-content' : undefined}>
             <h1>Hi, {student?.fullName}</h1>
+            {profile?.tuitionClassName && <p className="poster-hero-class">{profile.tuitionClassName}</p>}
             <p className="muted text-sm">
-              {profile?.tuitionClassName && <>Class: {profile.tuitionClassName} | </>}
               Student number: <span className="student-number">{student?.studentNumber}</span>
               {profile?.school && <> | School: {profile.school}</>}
             </p>
