@@ -501,12 +501,12 @@ button, input, select, textarea {
 /* Calls out the newest release in a results table (e.g. the student
    dashboard) so it doesn't blend into older rows. */
 .mark-table tr.row-highlight td {
-  background: rgba(201, 154, 46, 0.1);
+  background: rgba(34, 160, 107, 0.1);
   font-weight: 600;
 }
 
 .mark-table tr.row-highlight:hover td {
-  background: rgba(201, 154, 46, 0.16);
+  background: rgba(34, 160, 107, 0.16);
 }
 
 .student-number {
@@ -1655,7 +1655,7 @@ button, input, select, textarea {
   }
 
   .mark-table tr {
-    padding: 10px 14px;
+    padding: 16px 18px;
     border-bottom: 1px solid var(--color-border);
   }
 
@@ -1666,7 +1666,7 @@ button, input, select, textarea {
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    padding: 7px 0;
+    padding: 9px 0;
     border-bottom: 1px dashed var(--color-border-soft);
     text-align: right;
   }
