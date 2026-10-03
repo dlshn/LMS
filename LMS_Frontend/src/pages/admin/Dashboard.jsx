@@ -157,16 +157,13 @@ export default function AdminDashboard() {
 
             <div className="sheet-card" style={{ display: 'flex', flexDirection: 'column' }}>
               <h3>Class poster</h3>
-              <p className="muted text-sm">
-                Shown at the top of your students' dashboard — a class photo, an ad for enrollment, a
-                banner with your name and subject, whatever represents your class.
-              </p>
+              <p className="muted text-sm">Shown at the top of your students' dashboard.</p>
 
               {posterError && <div className="alert alert-error">{posterError}</div>}
 
               <div className="admin-poster-row">
                 {posterUrl && (
-                  <div className="poster-hero-image" style={{ width: 140 }}>
+                  <div className="poster-hero-image" style={{ width: 56, flexShrink: 0 }}>
                     <img src={posterUrl} alt="Class poster" />
                   </div>
                 )}
