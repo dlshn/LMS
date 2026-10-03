@@ -101,48 +101,50 @@ export default function AdminDashboard() {
             </div>
           </div>
 
-          <div className="sheet-card" style={{ marginBottom: 20 }}>
-            <h3>Your class join code</h3>
-            <p className="muted text-sm">
-              Share this code with your students. They'll use it, together with the student number you
-              give them, to create their own login.
-            </p>
-            <p className="score-red" style={{ fontSize: '1.6rem', letterSpacing: '0.08em' }}>
-              {admin?.joinCode || '—'}
-            </p>
-          </div>
+          <div className="dashboard-grid" style={{ alignItems: 'start' }}>
+            <div className="sheet-card">
+              <h3>Your class join code</h3>
+              <p className="muted text-sm">
+                Share this code with your students. They'll use it, together with the student number you
+                give them, to create their own login.
+              </p>
+              <p className="score-red" style={{ fontSize: '1.6rem', letterSpacing: '0.08em' }}>
+                {admin?.joinCode || '—'}
+              </p>
+            </div>
 
-          <div className="sheet-card" style={{ marginBottom: 20 }}>
-            <h3>Class poster</h3>
-            <p className="muted text-sm">
-              Shown at the top of your students' dashboard — a class photo, an ad for enrollment, a
-              banner with your name and subject, whatever represents your class.
-            </p>
+            <div className="sheet-card">
+              <h3>Class poster</h3>
+              <p className="muted text-sm">
+                Shown at the top of your students' dashboard — a class photo, an ad for enrollment, a
+                banner with your name and subject, whatever represents your class.
+              </p>
 
-            {posterError && <div className="alert alert-error">{posterError}</div>}
+              {posterError && <div className="alert alert-error">{posterError}</div>}
 
-            {posterUrl && (
-              <div className="poster-hero-image" style={{ width: 160, margin: '12px 0' }}>
-                <img src={posterUrl} alt="Class poster" />
-              </div>
-            )}
-
-            <div className="flex-row" style={{ flexWrap: 'wrap' }}>
-              <label className="btn btn-ghost btn-sm" style={{ cursor: 'pointer' }}>
-                {posterUploading ? 'Uploading...' : posterUrl ? 'Replace poster' : 'Upload poster'}
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handlePosterUpload}
-                  disabled={posterUploading}
-                  style={{ display: 'none' }}
-                />
-              </label>
               {posterUrl && (
-                <button className="btn-danger-text" onClick={handlePosterDelete}>
-                  Remove
-                </button>
+                <div className="poster-hero-image" style={{ width: 160, margin: '12px 0' }}>
+                  <img src={posterUrl} alt="Class poster" />
+                </div>
               )}
+
+              <div className="flex-row" style={{ flexWrap: 'wrap' }}>
+                <label className="btn btn-ghost btn-sm" style={{ cursor: 'pointer' }}>
+                  {posterUploading ? 'Uploading...' : posterUrl ? 'Replace poster' : 'Upload poster'}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handlePosterUpload}
+                    disabled={posterUploading}
+                    style={{ display: 'none' }}
+                  />
+                </label>
+                {posterUrl && (
+                  <button className="btn-danger-text" onClick={handlePosterDelete}>
+                    Remove
+                  </button>
+                )}
+              </div>
             </div>
           </div>
 
