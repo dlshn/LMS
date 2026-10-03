@@ -122,11 +122,9 @@ export default function AdminDashboard() {
             {posterError && <div className="alert alert-error">{posterError}</div>}
 
             {posterUrl && (
-              <img
-                src={posterUrl}
-                alt="Class poster"
-                style={{ width: '100%', maxWidth: 480, borderRadius: 'var(--radius)', display: 'block', margin: '12px 0' }}
-              />
+              <div className="class-poster" style={{ maxWidth: 480, margin: '12px 0' }}>
+                <img src={posterUrl} alt="Class poster" />
+              </div>
             )}
 
             <div className="flex-row" style={{ flexWrap: 'wrap' }}>

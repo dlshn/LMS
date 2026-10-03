@@ -652,10 +652,15 @@ button, input, select, textarea {
   margin-top: 20px;
 }
 
+/* Fixed 16:9 instead of a max-height — a pixel cap makes the visible
+   crop of the image change with viewport width (a tall sliver on
+   desktop, a near-square chunk on mobile). A ratio keeps the same
+   proportion of the image framed at every screen size. */
 .class-poster img {
   width: 100%;
-  max-height: 280px;
+  aspect-ratio: 16 / 9;
   object-fit: cover;
+  object-position: top;
   display: block;
 }
 
