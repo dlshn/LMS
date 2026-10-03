@@ -1661,8 +1661,6 @@ button, input, select, textarea {
     padding: 2px 0;
     margin-bottom: 10px;
     border: 1px solid var(--color-border);
-    border-radius: 10px;
-    overflow: hidden;
   }
 
   .mark-table tr:last-child { margin-bottom: 0; }
