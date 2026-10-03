@@ -7,57 +7,88 @@ function todayISO() {
 }
 
 export default function Attendance() {
-  const [students, setStudents] = useState([]);
-  const [selectedStudentId, setSelectedStudentId] = useState('');
   const [date, setDate] = useState(todayISO());
-  const [status, setStatus] = useState('PRESENT');
+  const [rows, setRows] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const [submitting, setSubmitting] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  // History section — view one student's past records separately from
+  // the bulk marking form above.
+  const [historyStudentId, setHistoryStudentId] = useState('');
   const [records, setRecords] = useState(null);
   const [summary, setSummary] = useState(null);
-  const [loadingRecords, setLoadingRecords] = useState(false);
+  const [loadingHistory, setLoadingHistory] = useState(false);
+
+  async function loadForDate(d) {
+    setLoading(true);
+    setError('');
+    try {
+      const { data } = await endpoints.getAttendanceForDate(d);
+      setRows(data.students);
+      if (!historyStudentId && data.students.length > 0) {
+        setHistoryStudentId(data.students[0].studentId);
+      }
+    } catch (err) {
+      setError(err.response?.data?.error || 'Could not load the attendance form.');
+    } finally {
+      setLoading(false);
+    }
+  }
 
   useEffect(() => {
-    endpoints.getAllStudents().then(({ data }) => {
-      setStudents(data.students);
-      if (data.students.length > 0) setSelectedStudentId(data.students[0].id);
-    });
-  }, []);
+    loadForDate(date);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [date]);
 
-  async function loadAttendance(studentId) {
+  async function loadHistory(studentId) {
     if (!studentId) return;
-    setLoadingRecords(true);
+    setLoadingHistory(true);
     try {
       const { data } = await endpoints.getStudentAttendance(studentId);
       setRecords(data.records);
       setSummary(data.summary);
     } catch (err) {
-      setError(err.response?.data?.error || 'Could not load attendance.');
+      setError(err.response?.data?.error || 'Could not load attendance history.');
     } finally {
-      setLoadingRecords(false);
+      setLoadingHistory(false);
     }
   }
 
   useEffect(() => {
-    if (selectedStudentId) loadAttendance(selectedStudentId);
-  }, [selectedStudentId]);
+    if (historyStudentId) loadHistory(historyStudentId);
+  }, [historyStudentId]);
 
-  async function handleMark(e) {
-    e.preventDefault();
+  function setStatus(studentId, status) {
+    setRows((prev) => prev.map((r) => (r.studentId === studentId ? { ...r, status } : r)));
+  }
+
+  function markAllPresent() {
+    setRows((prev) => prev.map((r) => ({ ...r, status: 'PRESENT' })));
+  }
+
+  async function handleSave() {
     setError('');
     setSuccess('');
-    setSubmitting(true);
+    const toSave = rows.filter((r) => r.status).map((r) => ({ studentId: r.studentId, status: r.status }));
+    if (toSave.length === 0) {
+      setError('Mark at least one student before saving.');
+      return;
+    }
+    setSaving(true);
     try {
-      await endpoints.markAttendance({ studentId: selectedStudentId, date, status });
-      setSuccess('Attendance recorded.');
-      await loadAttendance(selectedStudentId);
+      const { data } = await endpoints.markBulkAttendance(date, toSave);
+      setSuccess(data.message);
+      if (historyStudentId) await loadHistory(historyStudentId);
     } catch (err) {
-      setError(err.response?.data?.error || 'Could not record attendance.');
+      setError(err.response?.data?.error || 'Could not save attendance.');
     } finally {
-      setSubmitting(false);
+      setSaving(false);
     }
   }
+
+  const markedCount = rows.filter((r) => r.status).length;
 
   return (
     <AdminLayout>
@@ -69,38 +100,88 @@ export default function Attendance() {
       {success && <div className="alert alert-success">{success}</div>}
 
       <div className="sheet-card" style={{ marginBottom: 20 }}>
-        <h3>Mark attendance</h3>
-        <form onSubmit={handleMark}>
-          <div className="field">
-            <label>Student</label>
-            <select value={selectedStudentId} onChange={(e) => setSelectedStudentId(e.target.value)}>
-              {students.map((s) => (
-                <option key={s.id} value={s.id}>
-                  {s.fullName} ({s.studentNumber})
-                </option>
-              ))}
-            </select>
+        <div className="page-header" style={{ marginBottom: 12 }}>
+          <div>
+            <h3>Mark attendance</h3>
+            <p className="muted text-sm">{markedCount} of {rows.length} marked</p>
           </div>
-          <div className="field">
-            <label>Date</label>
-            <input type="date" value={date} onChange={(e) => setDate(e.target.value)} required />
+          <div className="flex-row">
+            <input
+              type="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              style={{ width: 'auto' }}
+            />
+            <button type="button" className="btn btn-ghost btn-sm" onClick={markAllPresent} disabled={loading || rows.length === 0}>
+              Mark all present
+            </button>
+            <button type="button" className="btn btn-accent" onClick={handleSave} disabled={saving || loading}>
+              {saving ? 'Saving...' : 'Save attendance'}
+            </button>
           </div>
-          <div className="field">
-            <label>Status</label>
-            <select value={status} onChange={(e) => setStatus(e.target.value)}>
-              <option value="PRESENT">Present</option>
-              <option value="ABSENT">Absent</option>
-            </select>
+        </div>
+
+        {loading ? (
+          <p className="muted">Loading...</p>
+        ) : rows.length === 0 ? (
+          <div className="empty-state">
+            <p>No students in this tuition class yet. Add students before marking attendance.</p>
           </div>
-          <button type="submit" className="btn btn-accent" disabled={submitting || !selectedStudentId}>
-            {submitting ? 'Saving...' : 'Save attendance'}
-          </button>
-        </form>
+        ) : (
+          <div className="table-card">
+            <table className="mark-table">
+              <thead>
+                <tr>
+                  <th>Student No.</th>
+                  <th>Name</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map((row) => (
+                  <tr key={row.studentId}>
+                    <td className="student-number" data-label="Student No.">{row.studentNumber}</td>
+                    <td data-label="Name">{row.fullName}</td>
+                    <td data-label="Status">
+                      <div className="attendance-toggle">
+                        <button
+                          type="button"
+                          className={`attendance-toggle-btn attendance-toggle-btn--present ${row.status === 'PRESENT' ? 'active' : ''}`}
+                          onClick={() => setStatus(row.studentId, 'PRESENT')}
+                        >
+                          Present
+                        </button>
+                        <button
+                          type="button"
+                          className={`attendance-toggle-btn attendance-toggle-btn--absent ${row.status === 'ABSENT' ? 'active' : ''}`}
+                          onClick={() => setStatus(row.studentId, 'ABSENT')}
+                        >
+                          Absent
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
 
       <div className="sheet-card">
         <h3>Attendance history</h3>
-        {loadingRecords ? (
+        <div className="field" style={{ maxWidth: 360 }}>
+          <label>Student</label>
+          <select value={historyStudentId} onChange={(e) => setHistoryStudentId(e.target.value)}>
+            {rows.map((r) => (
+              <option key={r.studentId} value={r.studentId}>
+                {r.fullName} ({r.studentNumber})
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {loadingHistory ? (
           <p className="muted">Loading...</p>
         ) : !records ? (
           <p className="muted">Select a student to see their attendance.</p>

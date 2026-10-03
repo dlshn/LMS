@@ -21,7 +21,8 @@ export const updateStudent = (id, data) => api.patch(`/api/students/${id}`, data
 export const deleteStudent = (id) => api.delete(`/api/students/${id}`);
 
 // --- Attendance (admin) ---
-export const markAttendance = (data) => api.post('/api/attendance', data);
+export const getAttendanceForDate = (date) => api.get('/api/attendance/by-date', { params: { date } });
+export const markBulkAttendance = (date, records) => api.post('/api/attendance/bulk', { date, records });
 export const getStudentAttendance = (studentId) =>
   api.get(`/api/attendance/student/${studentId}`);
 
