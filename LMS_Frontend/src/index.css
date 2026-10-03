@@ -1654,12 +1654,18 @@ button, input, select, textarea {
     width: 100%;
   }
 
+  /* Each exam is its own bordered card with a gap to the next one,
+     instead of one continuous list where a thin dashed rule was the
+     only thing separating one exam's fields from the next exam's. */
   .mark-table tr {
-    padding: 6px 0;
-    border-bottom: 1px solid var(--color-border);
+    padding: 2px 0;
+    margin-bottom: 10px;
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    overflow: hidden;
   }
 
-  .mark-table tr:last-child { border-bottom: none; }
+  .mark-table tr:last-child { margin-bottom: 0; }
 
   /* Horizontal padding lives on td (not the outer tr) so a highlighted
      row's background — set on td — actually includes that gutter
@@ -1669,7 +1675,7 @@ button, input, select, textarea {
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    padding: 10px 18px;
+    padding: 6px 16px;
     border-bottom: 1px dashed var(--color-border-soft);
     text-align: right;
   }
