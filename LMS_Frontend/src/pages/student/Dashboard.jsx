@@ -228,7 +228,7 @@ export default function StudentDashboard() {
 
             <div className="dashboard-grid spacer-top">
               <div className="sheet-card">
-                <h3>Marks by exam</h3>
+                <h3>Performance Chart</h3>
                 {withPercentage.length === 0 ? (
                   <p className="muted">No published results yet. Check back once your admin releases one.</p>
                 ) : (
