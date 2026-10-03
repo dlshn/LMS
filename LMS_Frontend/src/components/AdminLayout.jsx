@@ -65,7 +65,7 @@ export default function AdminLayout({ children }) {
           <NavLink to="/admin/recordings" className={linkClass} onClick={() => setMenuOpen(false)}>
             Recordings
           </NavLink>
-          <button onClick={handleLogout}>Log out</button>
+          <button className="topbar-logout-btn" onClick={handleLogout}>Log out</button>
         </nav>
       </div>
       <div className="page-body">{children}</div>

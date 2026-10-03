@@ -106,7 +106,7 @@ export default function StudentDashboard() {
           <a href="#notes" onClick={() => setMenuOpen(false)}>Notes</a>
           <a href="#recordings" onClick={() => setMenuOpen(false)}>Recordings</a>
           <NoticeBell />
-          <button onClick={handleLogout}>Log out</button>
+          <button className="topbar-logout-btn" onClick={handleLogout}>Log out</button>
         </nav>
       </div>
       <div className="page-body">
