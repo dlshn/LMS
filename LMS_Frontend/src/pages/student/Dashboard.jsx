@@ -110,21 +110,21 @@ export default function StudentDashboard() {
         </nav>
       </div>
       <div className="page-body">
-        {profile?.posterImageUrl && (
-          <div className="class-poster">
-            <img src={profile.posterImageUrl} alt={profile.tuitionClassName || 'Class poster'} />
-            {profile.tuitionClassName && <div className="class-poster-caption">{profile.tuitionClassName}</div>}
+        <div className={profile?.posterImageUrl ? 'poster-hero' : 'page-header'}>
+          {profile?.posterImageUrl && (
+            <div className="poster-hero-image">
+              <img src={profile.posterImageUrl} alt={profile.tuitionClassName || 'Class poster'} />
+            </div>
+          )}
+          <div className={profile?.posterImageUrl ? 'poster-hero-content' : undefined}>
+            <h1>Hi, {student?.fullName}</h1>
+            <p className="muted text-sm">
+              {profile?.tuitionClassName && <>Class: {profile.tuitionClassName} | </>}
+              Student number: <span className="student-number">{student?.studentNumber}</span>
+              {profile?.school && <> | School: {profile.school}</>}
+            </p>
           </div>
-        )}
-
-        <div className="page-header">
-          <h1>Hi, {student?.fullName}</h1>
         </div>
-        <p className="muted text-sm">
-          {profile?.tuitionClassName && <>Class: {profile.tuitionClassName} | </>}
-          Student number: <span className="student-number">{student?.studentNumber}</span>
-          {profile?.school && <> | School: {profile.school}</>}
-        </p>
 
         {error && <div className="alert alert-error">{error}</div>}
 

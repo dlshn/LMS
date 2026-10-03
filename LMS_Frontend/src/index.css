@@ -644,36 +644,43 @@ button, input, select, textarea {
 
 /* Class poster — a banner image the admin uploads, shown above the
    greeting with the class name overlaid bottom-left. */
-.class-poster {
-  position: relative;
+/* Compact profile-card layout: a fixed-size poster thumbnail beside the
+   greeting, not a full-bleed banner — a hero-width image at 16:9 looks
+   fine on a phone but is enormous (and mostly empty scroll) on a wide
+   desktop screen. */
+.poster-hero {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius);
-  overflow: hidden;
   box-shadow: var(--shadow-card);
-  margin-top: 20px;
+  padding: 16px;
+  margin-bottom: 20px;
 }
 
-/* Fixed 16:9 instead of a max-height — a pixel cap makes the visible
-   crop of the image change with viewport width (a tall sliver on
-   desktop, a near-square chunk on mobile). A ratio keeps the same
-   proportion of the image framed at every screen size. */
-.class-poster img {
+.poster-hero-image {
+  flex-shrink: 0;
+  width: 160px;
+  aspect-ratio: 1;
+  border-radius: calc(var(--radius) - 6px);
+  overflow: hidden;
+}
+
+.poster-hero-image img {
   width: 100%;
-  aspect-ratio: 16 / 9;
+  height: 100%;
   object-fit: cover;
   object-position: top;
   display: block;
 }
 
-.class-poster-caption {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  padding: 16px 20px;
-  background: linear-gradient(to top, rgba(23, 33, 88, 0.85), transparent);
-  color: #fff;
-  font-weight: 600;
-  font-size: 1.1rem;
+.poster-hero-content h1 { margin: 0 0 6px; }
+
+@media (max-width: 600px) {
+  .poster-hero { flex-direction: column; align-items: stretch; }
+  .poster-hero-image { width: 100%; aspect-ratio: 16 / 9; }
 }
 
 /* Chart + attendance side by side, stacking on narrow screens */

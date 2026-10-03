@@ -122,7 +122,7 @@ export default function AdminDashboard() {
             {posterError && <div className="alert alert-error">{posterError}</div>}
 
             {posterUrl && (
-              <div className="class-poster" style={{ maxWidth: 480, margin: '12px 0' }}>
+              <div className="poster-hero-image" style={{ width: 160, margin: '12px 0' }}>
                 <img src={posterUrl} alt="Class poster" />
               </div>
             )}
