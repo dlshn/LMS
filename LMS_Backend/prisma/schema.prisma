@@ -24,11 +24,13 @@ enum ExamStatus {
 }
 
 model TuitionClass {
-  id         String   @id @default(uuid())
-  name       String
-  joinCode   String   @unique
-  isApproved Boolean  @default(false)
-  createdAt  DateTime @default(now())
+  id             String   @id @default(uuid())
+  name           String
+  joinCode       String   @unique
+  isApproved     Boolean  @default(false)
+  posterImageKey String?
+  posterImageUrl String?
+  createdAt      DateTime @default(now())
 
   admins      Admin[]
   students    Student[]

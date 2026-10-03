@@ -2,24 +2,31 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import AdminLayout from '../../components/AdminLayout';
 import { useAdminAuth } from '../../context/AdminAuthContext';
+import { useConfirm } from '../../context/ConfirmDialogContext';
 import * as endpoints from '../../api/endpoints';
 
 export default function AdminDashboard() {
   const { admin } = useAdminAuth();
+  const confirm = useConfirm();
   const [students, setStudents] = useState([]);
   const [exams, setExams] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [posterUrl, setPosterUrl] = useState(null);
+  const [posterUploading, setPosterUploading] = useState(false);
+  const [posterError, setPosterError] = useState('');
 
   useEffect(() => {
     async function load() {
       try {
-        const [studentsRes, examsRes] = await Promise.all([
+        const [studentsRes, examsRes, posterRes] = await Promise.all([
           endpoints.getAllStudents(),
           endpoints.getAllExams(),
+          endpoints.getPoster(),
         ]);
         setStudents(studentsRes.data.students);
         setExams(examsRes.data.exams);
+        setPosterUrl(posterRes.data.posterImageUrl);
       } catch (err) {
         setError(err.response?.data?.error || 'Could not load dashboard data.');
       } finally {
@@ -28,6 +35,41 @@ export default function AdminDashboard() {
     }
     load();
   }, []);
+
+  async function handlePosterUpload(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    setPosterError('');
+    setPosterUploading(true);
+    const formData = new FormData();
+    formData.append('file', file);
+    try {
+      const { data } = await endpoints.uploadPoster(formData);
+      setPosterUrl(data.posterImageUrl);
+    } catch (err) {
+      setPosterError(err.response?.data?.error || 'Could not upload the poster.');
+    } finally {
+      setPosterUploading(false);
+      e.target.value = '';
+    }
+  }
+
+  async function handlePosterDelete() {
+    const ok = await confirm({
+      title: 'Remove class poster?',
+      message: 'Students will no longer see it on their dashboard.',
+      confirmLabel: 'Remove',
+      danger: true,
+    });
+    if (!ok) return;
+    setPosterError('');
+    try {
+      await endpoints.deletePoster();
+      setPosterUrl(null);
+    } catch (err) {
+      setPosterError(err.response?.data?.error || 'Could not remove the poster.');
+    }
+  }
 
   const publishedCount = exams.filter((e) => e.status === 'PUBLISHED').length;
   const draftCount = exams.filter((e) => e.status === 'DRAFT').length;
@@ -68,6 +110,42 @@ export default function AdminDashboard() {
             <p className="score-red" style={{ fontSize: '1.6rem', letterSpacing: '0.08em' }}>
               {admin?.joinCode || '—'}
             </p>
+          </div>
+
+          <div className="sheet-card" style={{ marginBottom: 20 }}>
+            <h3>Class poster</h3>
+            <p className="muted text-sm">
+              Shown at the top of your students' dashboard — a class photo, an ad for enrollment, a
+              banner with your name and subject, whatever represents your class.
+            </p>
+
+            {posterError && <div className="alert alert-error">{posterError}</div>}
+
+            {posterUrl && (
+              <img
+                src={posterUrl}
+                alt="Class poster"
+                style={{ width: '100%', maxWidth: 480, borderRadius: 'var(--radius)', display: 'block', margin: '12px 0' }}
+              />
+            )}
+
+            <div className="flex-row" style={{ flexWrap: 'wrap' }}>
+              <label className="btn btn-ghost btn-sm" style={{ cursor: 'pointer' }}>
+                {posterUploading ? 'Uploading...' : posterUrl ? 'Replace poster' : 'Upload poster'}
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handlePosterUpload}
+                  disabled={posterUploading}
+                  style={{ display: 'none' }}
+                />
+              </label>
+              {posterUrl && (
+                <button className="btn-danger-text" onClick={handlePosterDelete}>
+                  Remove
+                </button>
+              )}
+            </div>
           </div>
 
           <div className="sheet-card">

@@ -168,7 +168,7 @@ async function getMyProfile(req, res) {
         fullName: true,
         studentNumber: true,
         school: true,
-        tuitionClass: { select: { name: true } },
+        tuitionClass: { select: { name: true, posterImageUrl: true } },
       },
     });
 
@@ -181,6 +181,7 @@ async function getMyProfile(req, res) {
       studentNumber: student.studentNumber,
       school: student.school,
       tuitionClassName: student.tuitionClass.name,
+      posterImageUrl: student.tuitionClass.posterImageUrl,
     });
   } catch (error) {
     console.error(error);

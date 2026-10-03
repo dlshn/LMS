@@ -71,3 +71,11 @@ export const deleteVideo = (id) => api.delete(`/api/videos/${id}`);
 
 // --- Recordings (student, requires student token) ---
 export const getMyVideos = () => api.get('/api/videos/my-videos', { useStudentAuth: true });
+
+// --- Poster (admin) ---
+export const getPoster = () => api.get('/api/poster');
+export const uploadPoster = (formData) =>
+  api.post('/api/poster', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+export const deletePoster = () => api.delete('/api/poster');

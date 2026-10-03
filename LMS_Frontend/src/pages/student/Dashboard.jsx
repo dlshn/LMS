@@ -110,6 +110,13 @@ export default function StudentDashboard() {
         </nav>
       </div>
       <div className="page-body">
+        {profile?.posterImageUrl && (
+          <div className="class-poster">
+            <img src={profile.posterImageUrl} alt={profile.tuitionClassName || 'Class poster'} />
+            {profile.tuitionClassName && <div className="class-poster-caption">{profile.tuitionClassName}</div>}
+          </div>
+        )}
+
         <div className="page-header">
           <h1>Hi, {student?.fullName}</h1>
         </div>
