@@ -1655,18 +1655,21 @@ button, input, select, textarea {
   }
 
   .mark-table tr {
-    padding: 16px 18px;
+    padding: 6px 0;
     border-bottom: 1px solid var(--color-border);
   }
 
   .mark-table tr:last-child { border-bottom: none; }
 
+  /* Horizontal padding lives on td (not the outer tr) so a highlighted
+     row's background — set on td — actually includes that gutter
+     instead of the text sitting flush against the colored box's edge. */
   .mark-table td {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    padding: 9px 0;
+    padding: 10px 18px;
     border-bottom: 1px dashed var(--color-border-soft);
     text-align: right;
   }
