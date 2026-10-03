@@ -562,15 +562,10 @@ button, input, select, textarea {
   vertical-align: middle;
 }
 
-/* Score display with red-pen underline */
 .score-red {
   font-family: var(--font-mono);
   font-weight: 600;
   color: var(--color-margin-rule);
-  text-decoration: underline;
-  text-decoration-style: wavy;
-  text-decoration-thickness: 1.5px;
-  text-underline-offset: 3px;
 }
 
 .rank-badge {
@@ -942,7 +937,7 @@ button, input, select, textarea {
 }
 
 .marks-chart-tooltip .muted { color: #c7d3d9; }
-.marks-chart-tooltip .score-red { color: #ff9b8a; text-decoration: none; }
+.marks-chart-tooltip .score-red { color: #ff9b8a; }
 
 .marks-chart-tooltip::after {
   content: '';
