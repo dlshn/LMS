@@ -9,11 +9,11 @@ const MIN_PASSWORD_LENGTH = 6;
 // Join codes are short and random, so a collision is very unlikely but not
 // impossible — retry a few times against the unique constraint before
 // giving up.
-async function createTuitionClassWithJoinCode(name) {
+async function createTuitionClassWithJoinCode(name, subject, classType) {
   for (let attempt = 0; attempt < 5; attempt++) {
     try {
       return await prisma.tuitionClass.create({
-        data: { name, joinCode: generateJoinCode() },
+        data: { name, subject, classType, joinCode: generateJoinCode() },
       });
     } catch (error) {
       if (error.code === 'P2002' && error.meta?.target?.includes('joinCode')) {
@@ -27,10 +27,14 @@ async function createTuitionClassWithJoinCode(name) {
 
 async function registerAdmin(req, res) {
   try {
-    const { tuitionClassName, adminName, email, password } = req.body;
+    const { tuitionClassName, adminName, phone, subject, classType, email, password } = req.body;
 
-    if (!tuitionClassName || !adminName || !email || !password) {
+    if (!tuitionClassName || !adminName || !phone || !subject || !classType || !email || !password) {
       return res.status(400).json({ error: 'All fields are required' });
+    }
+
+    if (!['PHYSICAL', 'ONLINE'].includes(classType)) {
+      return res.status(400).json({ error: 'classType must be PHYSICAL or ONLINE' });
     }
 
     const existingAdmin = await prisma.admin.findUnique({ where: { email } });
@@ -38,13 +42,14 @@ async function registerAdmin(req, res) {
       return res.status(409).json({ error: 'Email already registered' });
     }
 
-    const tuitionClass = await createTuitionClassWithJoinCode(tuitionClassName);
+    const tuitionClass = await createTuitionClassWithJoinCode(tuitionClassName, subject, classType);
 
     const passwordHash = await hashPassword(password);
 
     const admin = await prisma.admin.create({
       data: {
         name: adminName,
+        phone,
         email,
         passwordHash,
         tuitionClassId: tuitionClass.id,
@@ -57,8 +62,14 @@ async function registerAdmin(req, res) {
 
     res.status(201).json({
       message: 'Tuition class registered successfully',
-      admin: { id: admin.id, name: admin.name, email: admin.email },
-      tuitionClass: { id: tuitionClass.id, name: tuitionClass.name, joinCode: tuitionClass.joinCode },
+      admin: { id: admin.id, name: admin.name, email: admin.email, phone: admin.phone },
+      tuitionClass: {
+        id: tuitionClass.id,
+        name: tuitionClass.name,
+        subject: tuitionClass.subject,
+        classType: tuitionClass.classType,
+        joinCode: tuitionClass.joinCode,
+      },
       accessToken,
       refreshToken,
     });

@@ -23,14 +23,21 @@ enum ExamStatus {
   PUBLISHED
 }
 
+enum ClassType {
+  PHYSICAL
+  ONLINE
+}
+
 model TuitionClass {
-  id             String   @id @default(uuid())
+  id             String    @id @default(uuid())
   name           String
-  joinCode       String   @unique
-  isApproved     Boolean  @default(false)
+  subject        String?
+  classType      ClassType @default(PHYSICAL)
+  joinCode       String    @unique
+  isApproved     Boolean   @default(false)
   posterImageKey String?
   posterImageUrl String?
-  createdAt      DateTime @default(now())
+  createdAt      DateTime  @default(now())
 
   admins      Admin[]
   students    Student[]
@@ -46,6 +53,7 @@ model Admin {
   tuitionClassId String?
   tuitionClass   TuitionClass? @relation(fields: [tuitionClassId], references: [id])
   name           String
+  phone          String?
   email          String        @unique
   passwordHash   String
   role           AdminRole     @default(ADMIN)

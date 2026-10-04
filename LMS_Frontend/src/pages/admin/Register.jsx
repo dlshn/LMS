@@ -9,6 +9,9 @@ export default function AdminRegister() {
   const [form, setForm] = useState({
     tuitionClassName: '',
     adminName: '',
+    phone: '',
+    subject: '',
+    classType: 'PHYSICAL',
     email: '',
     password: '',
   });
@@ -66,6 +69,39 @@ export default function AdminRegister() {
               placeholder="Kasun Perera"
               required
             />
+          </div>
+          <div className="field">
+            <label htmlFor="phone">Your mobile number</label>
+            <input
+              id="phone"
+              type="tel"
+              value={form.phone}
+              onChange={(e) => updateField('phone', e.target.value)}
+              placeholder="07X XXX XXXX"
+              required
+            />
+          </div>
+          <div className="field">
+            <label htmlFor="subject">Subject</label>
+            <input
+              id="subject"
+              value={form.subject}
+              onChange={(e) => updateField('subject', e.target.value)}
+              placeholder="Mathematics"
+              required
+            />
+          </div>
+          <div className="field">
+            <label htmlFor="classType">Class type</label>
+            <select
+              id="classType"
+              value={form.classType}
+              onChange={(e) => updateField('classType', e.target.value)}
+              required
+            >
+              <option value="PHYSICAL">Physical</option>
+              <option value="ONLINE">Online</option>
+            </select>
           </div>
           <div className="field">
             <label htmlFor="email">Email</label>
