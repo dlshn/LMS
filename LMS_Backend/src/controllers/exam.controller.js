@@ -98,4 +98,27 @@ async function publishExam(req, res) {
   }
 }
 
-module.exports = { createExam, getAllExams, updateExam, publishExam };
+async function deleteExam(req, res) {
+  try {
+    const tuitionClassId = req.admin.tuitionClassId;
+    const { id } = req.params;
+
+    const exam = await prisma.exam.findFirst({ where: { id, tuitionClassId } });
+    if (!exam) {
+      return res.status(404).json({ error: 'Exam not found in your tuition class' });
+    }
+
+    // Deleting a published exam wipes any marks already entered/released
+    // for it — the confirm dialog on the frontend is what actually warns
+    // the admin about that, this just does the cascade.
+    await prisma.mark.deleteMany({ where: { examId: id } });
+    await prisma.exam.delete({ where: { id } });
+
+    res.json({ message: 'Exam deleted' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Something went wrong while deleting the exam' });
+  }
+}
+
+module.exports = { createExam, getAllExams, updateExam, publishExam, deleteExam };

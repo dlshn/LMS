@@ -35,6 +35,7 @@ export const createExam = (data) => api.post('/api/exams', data);
 export const getAllExams = () => api.get('/api/exams');
 export const updateExam = (id, data) => api.patch(`/api/exams/${id}`, data);
 export const publishExam = (id) => api.patch(`/api/exams/${id}/publish`);
+export const deleteExam = (id) => api.delete(`/api/exams/${id}`);
 
 // --- Marks (admin) ---
 export const getMarksEntryForm = (examId) => api.get(`/api/marks/${examId}/form`);

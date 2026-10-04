@@ -100,6 +100,26 @@ export default function Exams() {
     }
   }
 
+  async function handleDelete(exam) {
+    const ok = await confirm({
+      title: `Delete "${exam.title}"?`,
+      message:
+        exam.status === 'PUBLISHED'
+          ? 'This exam is published — deleting it also deletes any marks already released to students. This cannot be undone.'
+          : 'This cannot be undone.',
+      confirmLabel: 'Delete',
+      danger: true,
+    });
+    if (!ok) return;
+    setError('');
+    try {
+      await endpoints.deleteExam(exam.id);
+      await loadExams();
+    } catch (err) {
+      setError(err.response?.data?.error || 'Could not delete exam.');
+    }
+  }
+
   const EXAMS_PREVIEW_COUNT = 8;
   const visibleExams = showAllExams ? exams : exams.slice(0, EXAMS_PREVIEW_COUNT);
 
@@ -214,6 +234,9 @@ export default function Exams() {
                           </button>
                         </>
                       )}
+                      <button className="btn-danger-text" onClick={() => handleDelete(exam)}>
+                        Delete
+                      </button>
                     </div>
                   </td>
                 </tr>
