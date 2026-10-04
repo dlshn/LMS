@@ -15,6 +15,7 @@ import MarksEntry from './pages/admin/MarksEntry';
 import Notes from './pages/admin/Notes';
 import Notices from './pages/admin/Notices';
 import Recordings from './pages/admin/Recordings';
+import Settings from './pages/admin/Settings';
 
 import StudentLogin from './pages/student/Login';
 import StudentRegister from './pages/student/Register';
@@ -102,6 +103,15 @@ export default function App() {
               element={
                 <AdminProtectedRoute>
                   <Recordings />
+                </AdminProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/admin/settings"
+              element={
+                <AdminProtectedRoute>
+                  <Settings />
                 </AdminProtectedRoute>
               }
             />

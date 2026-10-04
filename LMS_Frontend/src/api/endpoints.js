@@ -81,3 +81,7 @@ export const uploadPoster = (formData) =>
     headers: { 'Content-Type': 'multipart/form-data' },
   });
 export const deletePoster = () => api.delete('/api/poster');
+
+// --- Settings (admin) ---
+export const getSettings = () => api.get('/api/settings');
+export const updateSettings = (data) => api.patch('/api/settings', data);

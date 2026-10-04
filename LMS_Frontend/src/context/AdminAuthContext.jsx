@@ -47,6 +47,16 @@ export function AdminAuthProvider({ children }) {
     return data;
   }
 
+  // Settings page updates name/class name on the backend directly (not via
+  // the login/register response shape persist() expects) — this just
+  // syncs the few fields the UI actually reads from `admin` elsewhere
+  // (topbar brand, "Welcome back, ...").
+  function updateLocalProfile({ adminName, tuitionClassName }) {
+    if (adminName) localStorage.setItem('adminName', adminName);
+    if (tuitionClassName) localStorage.setItem('tuitionClassName', tuitionClassName);
+    setAdmin((prev) => (prev ? { ...prev, adminName: adminName ?? prev.adminName, tuitionClassName: tuitionClassName ?? prev.tuitionClassName } : prev));
+  }
+
   function logout() {
     localStorage.removeItem('adminAccessToken');
     localStorage.removeItem('adminRefreshToken');
@@ -58,7 +68,7 @@ export function AdminAuthProvider({ children }) {
   }
 
   return (
-    <AdminAuthContext.Provider value={{ admin, register, login, logout }}>
+    <AdminAuthContext.Provider value={{ admin, register, login, logout, updateLocalProfile }}>
       {children}
     </AdminAuthContext.Provider>
   );
