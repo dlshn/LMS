@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAdminAuth } from '../../context/AdminAuthContext';
 import PublicNavbar from '../../components/PublicNavbar';
+import { IconEye, IconEyeOff } from '../../components/icons';
 
 export default function AdminRegister() {
   const { register } = useAdminAuth();
@@ -15,6 +16,9 @@ export default function AdminRegister() {
     email: '',
     password: '',
   });
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -25,6 +29,12 @@ export default function AdminRegister() {
   async function handleSubmit(e) {
     e.preventDefault();
     setError('');
+
+    if (form.password !== confirmPassword) {
+      setError('Passwords do not match.');
+      return;
+    }
+
     setLoading(true);
     try {
       await register(form);
@@ -116,14 +126,45 @@ export default function AdminRegister() {
           </div>
           <div className="field">
             <label htmlFor="password">Password</label>
-            <input
-              id="password"
-              type="password"
-              value={form.password}
-              onChange={(e) => updateField('password', e.target.value)}
-              placeholder="At least 8 characters"
-              required
-            />
+            <div className="password-field">
+              <input
+                id="password"
+                type={showPassword ? 'text' : 'password'}
+                value={form.password}
+                onChange={(e) => updateField('password', e.target.value)}
+                placeholder="At least 8 characters"
+                required
+              />
+              <button
+                type="button"
+                className="password-toggle"
+                onClick={() => setShowPassword((s) => !s)}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+              >
+                {showPassword ? <IconEyeOff /> : <IconEye />}
+              </button>
+            </div>
+          </div>
+          <div className="field">
+            <label htmlFor="confirmPassword">Confirm password</label>
+            <div className="password-field">
+              <input
+                id="confirmPassword"
+                type={showConfirmPassword ? 'text' : 'password'}
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="Re-enter your password"
+                required
+              />
+              <button
+                type="button"
+                className="password-toggle"
+                onClick={() => setShowConfirmPassword((s) => !s)}
+                aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
+              >
+                {showConfirmPassword ? <IconEyeOff /> : <IconEye />}
+              </button>
+            </div>
           </div>
           <button type="submit" className="btn btn-accent btn-block" disabled={loading}>
             {loading ? 'Creating your class...' : 'Register'}

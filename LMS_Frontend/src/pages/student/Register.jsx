@@ -18,7 +18,9 @@ export default function StudentRegister() {
   const { registerSelf } = useStudentAuth();
   const navigate = useNavigate();
   const [form, setForm] = useState(emptyForm);
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -29,6 +31,12 @@ export default function StudentRegister() {
   async function handleSubmit(e) {
     e.preventDefault();
     setError('');
+
+    if (form.password !== confirmPassword) {
+      setError('Passwords do not match.');
+      return;
+    }
+
     setLoading(true);
     try {
       await registerSelf(form);
@@ -109,6 +117,27 @@ export default function StudentRegister() {
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
                   {showPassword ? <IconEyeOff /> : <IconEye />}
+                </button>
+              </div>
+            </div>
+            <div className="field">
+              <label htmlFor="confirmPassword">Confirm password</label>
+              <div className="password-field">
+                <input
+                  id="confirmPassword"
+                  type={showConfirmPassword ? 'text' : 'password'}
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="Re-enter your password"
+                  required
+                />
+                <button
+                  type="button"
+                  className="password-toggle"
+                  onClick={() => setShowConfirmPassword((s) => !s)}
+                  aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
+                >
+                  {showConfirmPassword ? <IconEyeOff /> : <IconEye />}
                 </button>
               </div>
             </div>
