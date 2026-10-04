@@ -181,7 +181,6 @@ export default function StudentDashboard() {
                     <thead>
                       <tr>
                         <th>Exam</th>
-                        <th>Subject</th>
                         <th>Date</th>
                         <th>Marks</th>
                         <th>Rank</th>
@@ -199,7 +198,6 @@ export default function StudentDashboard() {
                               {i === 0 && <span className="stamp stamp-latest">Latest</span>}
                             </span>
                           </td>
-                          <td className="muted" data-label="Subject">{r.exam.subject}</td>
                           <td className="muted" data-label="Date">{new Date(r.exam.examDate).toLocaleDateString()}</td>
                           <td data-label="Marks">
                             <span className="score-red">
