@@ -275,26 +275,24 @@ export default function StudentDashboard() {
               {notes.length === 0 ? (
                 <p className="muted">No notes uploaded yet.</p>
               ) : (
-                <div className="note-list">
+                <div className="note-card-grid">
                   {notes.map((n) => {
                     const display = getFileDisplay(n.fileType);
                     return (
-                      <div key={n.id} className="note-row">
+                      <div key={n.id} className="note-card">
                         <div className={`note-row-icon note-row-icon--${display.kind}`}>
                           {display.kind === 'image' ? <IconImage /> : <IconFilePdf />}
                         </div>
-                        <div className="note-row-main">
+                        <div className="note-card-body">
                           <div className="note-row-title-line">
                             <span className="note-row-title">{n.title}</span>
                             <span className="note-row-badge">{display.label}</span>
                           </div>
                           <p className="note-row-meta">Uploaded {formatUploaded(n.uploadedAt)}</p>
                         </div>
-                        <div className="note-row-actions">
-                          <a href={n.fileUrl} target="_blank" rel="noreferrer" className="note-row-download" aria-label="Download">
-                            <IconDownload />
-                          </a>
-                        </div>
+                        <a href={n.fileUrl} target="_blank" rel="noreferrer" className="btn btn-ghost btn-sm note-card-download">
+                          <IconDownload /> Download
+                        </a>
                       </div>
                     );
                   })}

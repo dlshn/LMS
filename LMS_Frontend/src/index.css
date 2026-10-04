@@ -773,23 +773,42 @@ button, input, select, textarea {
   margin: 0 0 2px;
 }
 
-/* Notes — a flat list of rows (icon + title + upload time), not a card
-   grid: a note is a document to open, not a thumbnail to browse visually
-   like a recording. The icon is color-coded per file type. */
-.note-list {
+/* Notes — a responsive card grid (3-4 per row on desktop, stacking on
+   narrow screens) rather than a single-column list, so a class with a
+   handful of notes doesn't read as one long scroll. The icon is
+   color-coded per file type. */
+.note-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
   margin-top: 12px;
 }
 
-.note-row {
+.note-card {
   display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 14px 4px;
-  border-bottom: 1px solid var(--color-border-soft);
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
 }
 
-.note-row:last-child {
-  border-bottom: none;
+.note-card-body {
+  flex: 1;
+}
+
+.note-card-download {
+  justify-content: center;
+}
+
+.note-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.note-card-actions .note-card-download {
+  flex: 1;
 }
 
 .note-row-icon {
@@ -815,11 +834,6 @@ button, input, select, textarea {
 .note-row-icon--image { background: var(--color-surface-ruled); color: var(--color-ink-soft); }
 .note-row-icon--file { background: var(--color-surface-ruled); color: var(--color-ink-soft); }
 
-.note-row-main {
-  flex: 1;
-  min-width: 0;
-}
-
 .note-row-title-line {
   display: flex;
   align-items: baseline;
@@ -844,13 +858,6 @@ button, input, select, textarea {
   color: var(--color-ink-soft);
   font-size: 0.85rem;
   margin-top: 2px;
-}
-
-.note-row-actions {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  flex-shrink: 0;
 }
 
 .note-row-download {
