@@ -10,7 +10,7 @@ function sanitizeForFilename(text) {
     .replace(/(^-|-$)/g, '');
 }
 
-async function uploadNote(req, res) {
+async function uploadNote(req, res) { 
   try {
     const tuitionClassId = req.admin.tuitionClassId;
     const { title } = req.body;

@@ -66,9 +66,7 @@ export default function AdminLogin() {
         <p className="text-sm spacer-top">
           New tuition class? <Link to="/admin/register">Register here</Link>
         </p>
-        <p className="text-sm">
-          Student? <Link to="/student/login">Log in as a student</Link>
-        </p>
+        
       </div>
       </div>
     </div>
