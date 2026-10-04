@@ -1025,18 +1025,20 @@ button, input, select, textarea {
   border-top-color: var(--color-ink);
 }
 
-/* Attendance present/absent proportion bar */
-.attendance-bar {
+/* Attendance donut — single accent arc over a neutral track, percentage
+   centered inside it. */
+.attendance-donut-wrap {
   display: flex;
-  height: 10px;
-  border-radius: 999px;
-  overflow: hidden;
-  background: var(--color-border-soft);
-  margin: 4px 0 12px;
+  justify-content: center;
+  margin: 4px 0 16px;
 }
 
-.attendance-bar-present { background: var(--color-approve); }
-.attendance-bar-absent { background: var(--color-margin-rule); }
+.attendance-donut-value {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 700;
+  fill: var(--color-ink);
+}
 
 .attendance-legend {
   display: flex;

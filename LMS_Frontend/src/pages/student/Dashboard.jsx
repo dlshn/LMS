@@ -4,6 +4,7 @@ import { useStudentAuth } from '../../context/StudentAuthContext';
 import { useConfirm } from '../../context/ConfirmDialogContext';
 import * as endpoints from '../../api/endpoints';
 import MarksChart from '../../components/MarksChart';
+import AttendanceDonut from '../../components/AttendanceDonut';
 import NoticeBell from '../../components/NoticeBell';
 import { IconExam, IconChartBar, IconTrophy, IconCheckCircle } from '../../components/icons';
 import { getYoutubeEmbedUrl } from '../../utils/youtube';
@@ -240,15 +241,8 @@ export default function StudentDashboard() {
                   <p className="muted">No attendance marked yet.</p>
                 ) : (
                   <>
-                    <div className="attendance-bar">
-                      <div
-                        className="attendance-bar-present"
-                        style={{ width: `${attendance.summary.percentage}%` }}
-                      />
-                      <div
-                        className="attendance-bar-absent"
-                        style={{ width: `${100 - attendance.summary.percentage}%` }}
-                      />
+                    <div className="attendance-donut-wrap">
+                      <AttendanceDonut percentage={attendance.summary.percentage} />
                     </div>
                     <div className="attendance-legend">
                       <span>
