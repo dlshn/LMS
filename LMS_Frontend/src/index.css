@@ -678,8 +678,8 @@ button, input, select, textarea {
 
 .poster-hero-image {
   flex-shrink: 0;
-  width: 160px;
-  aspect-ratio: 1;
+  width: 220px;
+  aspect-ratio: 16 / 9;
   border-radius: calc(var(--radius) - 6px);
   overflow: hidden;
 }
@@ -703,7 +703,7 @@ button, input, select, textarea {
 
 @media (max-width: 600px) {
   .poster-hero { flex-direction: column; align-items: stretch; }
-  .poster-hero-image { width: 100%; aspect-ratio: 16 / 9; }
+  .poster-hero-image { width: 100%; }
 }
 
 /* Chart + attendance side by side, stacking on narrow screens */
