@@ -6,7 +6,6 @@ import { useConfirm } from '../../context/ConfirmDialogContext';
 
 const emptyForm = {
   title: '',
-  subject: '',
   examDate: '',
   description: '',
   maxMarks: 100,
@@ -53,7 +52,6 @@ export default function Exams() {
   function startEdit(exam) {
     setForm({
       title: exam.title,
-      subject: exam.subject,
       examDate: exam.examDate.slice(0, 10),
       description: exam.description || '',
       maxMarks: exam.maxMarks,
@@ -141,10 +139,6 @@ export default function Exams() {
             <div className="field">
               <label>Title</label>
               <input value={form.title} onChange={(e) => updateField('title', e.target.value)} required />
-            </div>
-            <div className="field">
-              <label>Subject</label>
-              <input value={form.subject} onChange={(e) => updateField('subject', e.target.value)} required />
             </div>
             <div className="field">
               <label>Exam date</label>

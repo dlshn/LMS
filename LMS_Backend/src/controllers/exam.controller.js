@@ -3,17 +3,24 @@ const prisma = require('../utils/prisma');
 async function createExam(req, res) {
   try {
     const tuitionClassId = req.admin.tuitionClassId;
-    const { title, subject, examDate, description, maxMarks } = req.body;
+    const { title, examDate, description, maxMarks } = req.body;
 
-    if (!title || !subject || !examDate || !maxMarks) {
-      return res.status(400).json({ error: 'title, subject, examDate and maxMarks are required' });
+    if (!title || !examDate || !maxMarks) {
+      return res.status(400).json({ error: 'title, examDate and maxMarks are required' });
     }
+
+    // Subject is set once at class registration and shared by every exam
+    // in the class — no reason to ask for it again per exam.
+    const tuitionClass = await prisma.tuitionClass.findUnique({
+      where: { id: tuitionClassId },
+      select: { subject: true },
+    });
 
     const exam = await prisma.exam.create({
       data: {
         tuitionClassId,
         title,
-        subject,
+        subject: tuitionClass?.subject || '',
         examDate: new Date(examDate),
         description,
         maxMarks: Number(maxMarks),
@@ -47,7 +54,7 @@ async function updateExam(req, res) {
   try {
     const tuitionClassId = req.admin.tuitionClassId;
     const { id } = req.params;
-    const { title, subject, examDate, description, maxMarks } = req.body;
+    const { title, examDate, description, maxMarks } = req.body;
 
     const exam = await prisma.exam.findFirst({ where: { id, tuitionClassId } });
     if (!exam) {
@@ -62,7 +69,6 @@ async function updateExam(req, res) {
       where: { id },
       data: {
         title,
-        subject,
         examDate: examDate ? new Date(examDate) : undefined,
         description,
         maxMarks: maxMarks ? Number(maxMarks) : undefined,
