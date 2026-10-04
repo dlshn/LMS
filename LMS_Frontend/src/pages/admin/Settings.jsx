@@ -67,7 +67,7 @@ export default function Settings() {
       {loading ? (
         <p className="muted">Loading...</p>
       ) : (
-        <div className="sheet-card" style={{ maxWidth: 520 }}>
+        <div className="sheet-card" style={{ maxWidth: 520, margin: '0 auto' }}>
           <form onSubmit={handleSubmit}>
             <div className="field">
               <label htmlFor="tuitionClassName">Class name</label>
