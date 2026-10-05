@@ -12,7 +12,7 @@ function sanitizeForFilename(text) {
 
 async function uploadNote(req, res) { 
   try {
-    const tuitionClassId = req.admin.tuitionClassId;
+    const tuitionClassId = req.user.tenantId;
     const { title } = req.body;
 
     if (!title) {
@@ -53,7 +53,7 @@ async function uploadNote(req, res) {
 
 async function getAllNotes(req, res) {
   try {
-    const tuitionClassId = req.admin.tuitionClassId;
+    const tuitionClassId = req.user.tenantId;
 
     const notes = await prisma.note.findMany({
       where: { tuitionClassId },
@@ -69,7 +69,7 @@ async function getAllNotes(req, res) {
 
 async function deleteNote(req, res) {
   try {
-    const tuitionClassId = req.admin.tuitionClassId;
+    const tuitionClassId = req.user.tenantId;
     const { id } = req.params;
 
     const note = await prisma.note.findFirst({ where: { id, tuitionClassId } });
@@ -89,7 +89,7 @@ async function deleteNote(req, res) {
 
 async function getNotesForStudent(req, res) {
   try {
-    const tuitionClassId = req.student.tuitionClassId;
+    const tuitionClassId = req.user.tenantId;
 
     const notes = await prisma.note.findMany({
       where: { tuitionClassId },

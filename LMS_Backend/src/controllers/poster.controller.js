@@ -7,7 +7,7 @@ const { PutObjectCommand, DeleteObjectCommand } = require('@aws-sdk/client-s3');
 // reason to leave the old object behind in the bucket.
 async function getPoster(req, res) {
   try {
-    const tuitionClassId = req.admin.tuitionClassId;
+    const tuitionClassId = req.user.tenantId;
     const tuitionClass = await prisma.tuitionClass.findUnique({
       where: { id: tuitionClassId },
       select: { posterImageUrl: true },
@@ -21,7 +21,7 @@ async function getPoster(req, res) {
 
 async function uploadPoster(req, res) {
   try {
-    const tuitionClassId = req.admin.tuitionClassId;
+    const tuitionClassId = req.user.tenantId;
 
     if (!req.file) {
       return res.status(400).json({ error: 'An image file is required' });
@@ -60,7 +60,7 @@ async function uploadPoster(req, res) {
 
 async function deletePoster(req, res) {
   try {
-    const tuitionClassId = req.admin.tuitionClassId;
+    const tuitionClassId = req.user.tenantId;
 
     const tuitionClass = await prisma.tuitionClass.findUnique({ where: { id: tuitionClassId } });
     if (!tuitionClass?.posterImageKey) {

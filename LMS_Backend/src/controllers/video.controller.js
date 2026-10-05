@@ -13,7 +13,7 @@ function extractYoutubeId(url) {
 
 async function createVideo(req, res) {
   try {
-    const tuitionClassId = req.admin.tuitionClassId;
+    const tuitionClassId = req.user.tenantId;
     const { title, youtubeUrl } = req.body;
 
     if (!title || !title.trim()) {
@@ -36,7 +36,7 @@ async function createVideo(req, res) {
 
 async function getAllVideos(req, res) {
   try {
-    const tuitionClassId = req.admin.tuitionClassId;
+    const tuitionClassId = req.user.tenantId;
     const videos = await prisma.video.findMany({
       where: { tuitionClassId },
       orderBy: { createdAt: 'desc' },
@@ -50,7 +50,7 @@ async function getAllVideos(req, res) {
 
 async function deleteVideo(req, res) {
   try {
-    const tuitionClassId = req.admin.tuitionClassId;
+    const tuitionClassId = req.user.tenantId;
     const { id } = req.params;
 
     const video = await prisma.video.findFirst({ where: { id, tuitionClassId } });
@@ -68,7 +68,7 @@ async function deleteVideo(req, res) {
 
 async function getVideosForStudent(req, res) {
   try {
-    const tuitionClassId = req.student.tuitionClassId;
+    const tuitionClassId = req.user.tenantId;
     const videos = await prisma.video.findMany({
       where: { tuitionClassId },
       orderBy: { createdAt: 'desc' },

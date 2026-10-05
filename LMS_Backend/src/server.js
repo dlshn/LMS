@@ -22,6 +22,7 @@ app.use('/api/notices', require('./routes/notice.routes'));
 app.use('/api/videos', require('./routes/video.routes'));
 app.use('/api/poster', require('./routes/poster.routes'));
 app.use('/api/settings', require('./routes/settings.routes'));
+app.use('/api/super', require('./routes/superAdmin.routes'));
 
 
 const PORT = process.env.PORT || 5000;

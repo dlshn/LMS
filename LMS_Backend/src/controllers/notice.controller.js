@@ -13,7 +13,7 @@ const DURATION_MS = {
 
 async function createNotice(req, res) {
   try {
-    const tuitionClassId = req.admin.tuitionClassId;
+    const tuitionClassId = req.user.tenantId;
     const { message, duration } = req.body;
 
     if (!message || !message.trim()) {
@@ -42,7 +42,7 @@ async function createNotice(req, res) {
 
 async function getAllNotices(req, res) {
   try {
-    const tuitionClassId = req.admin.tuitionClassId;
+    const tuitionClassId = req.user.tenantId;
     const notices = await prisma.notice.findMany({
       where: { tuitionClassId },
       orderBy: { createdAt: 'desc' },
@@ -56,7 +56,7 @@ async function getAllNotices(req, res) {
 
 async function deleteNotice(req, res) {
   try {
-    const tuitionClassId = req.admin.tuitionClassId;
+    const tuitionClassId = req.user.tenantId;
     const { id } = req.params;
 
     const notice = await prisma.notice.findFirst({ where: { id, tuitionClassId } });
@@ -76,7 +76,7 @@ async function deleteNotice(req, res) {
 // not just cosmetically on the frontend.
 async function getActiveNoticesForStudent(req, res) {
   try {
-    const tuitionClassId = req.student.tuitionClassId;
+    const tuitionClassId = req.user.tenantId;
     const notices = await prisma.notice.findMany({
       where: { tuitionClassId, expiresAt: { gt: new Date() } },
       orderBy: { createdAt: 'desc' },

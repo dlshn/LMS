@@ -2,7 +2,7 @@ const prisma = require('../utils/prisma');
 
 async function getMarksEntryForm(req, res) {
   try {
-    const tuitionClassId = req.admin.tuitionClassId;
+    const tuitionClassId = req.user.tenantId;
     const { examId } = req.params;
 
     const exam = await prisma.exam.findFirst({ where: { id: examId, tuitionClassId } });
@@ -41,7 +41,7 @@ async function getMarksEntryForm(req, res) {
 
 async function submitBulkMarks(req, res) {
   try {
-    const tuitionClassId = req.admin.tuitionClassId;
+    const tuitionClassId = req.user.tenantId;
     const { examId } = req.params;
     const { marks } = req.body; // expected: [{ studentId, marksObtained }, ...]
 
@@ -90,7 +90,7 @@ async function submitBulkMarks(req, res) {
 
 async function getMyResults(req, res) {
   try {
-    const studentId = req.student.studentId;
+    const studentId = req.user.id;
 
     const marks = await prisma.mark.findMany({
       where: { studentId, exam: { status: 'PUBLISHED' } },

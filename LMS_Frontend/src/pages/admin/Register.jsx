@@ -37,7 +37,11 @@ export default function AdminRegister() {
 
     setLoading(true);
     try {
-      await register(form);
+      const data = await register(form);
+      if (data.pending) {
+        navigate('/admin/login', { state: { notice: data.message } });
+        return;
+      }
       navigate('/admin/dashboard');
     } catch (err) {
       setError(err.response?.data?.error || 'Registration failed. Please try again.');

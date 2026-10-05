@@ -16,6 +16,8 @@ import Notes from './pages/admin/Notes';
 import Notices from './pages/admin/Notices';
 import Recordings from './pages/admin/Recordings';
 import Settings from './pages/admin/Settings';
+import PendingClasses from './pages/super/PendingClasses';
+import SuperAdminRoute from './components/SuperAdminRoute';
 
 import StudentLogin from './pages/student/Login';
 import StudentRegister from './pages/student/Register';
@@ -113,6 +115,16 @@ export default function App() {
                 <AdminProtectedRoute>
                   <Settings />
                 </AdminProtectedRoute>
+              }
+            />
+
+            {/* Super admin */}
+            <Route
+              path="/super/classes"
+              element={
+                <SuperAdminRoute>
+                  <PendingClasses />
+                </SuperAdminRoute>
               }
             />
 

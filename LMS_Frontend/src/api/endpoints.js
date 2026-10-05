@@ -82,6 +82,11 @@ export const uploadPoster = (formData) =>
   });
 export const deletePoster = () => api.delete('/api/poster');
 
+// --- Platform admin (SUPER_ADMIN only) ---
+export const getPendingClasses = () => api.get('/api/super/classes/pending');
+export const approveClass = (id) => api.post(`/api/super/classes/${id}/approve`);
+export const rejectClass = (id) => api.post(`/api/super/classes/${id}/reject`);
+
 // --- Settings (admin) ---
 export const getSettings = () => api.get('/api/settings');
 export const updateSettings = (data) => api.patch('/api/settings', data);

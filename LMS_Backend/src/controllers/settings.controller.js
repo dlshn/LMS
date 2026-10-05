@@ -3,7 +3,7 @@ const prisma = require('../utils/prisma');
 async function getSettings(req, res) {
   try {
     const admin = await prisma.admin.findUnique({
-      where: { id: req.admin.adminId },
+      where: { id: req.user.id },
       select: {
         name: true,
         phone: true,
@@ -46,12 +46,12 @@ async function updateSettings(req, res) {
     }
 
     await prisma.admin.update({
-      where: { id: req.admin.adminId },
+      where: { id: req.user.id },
       data: { name: adminName, phone },
     });
 
     const tuitionClass = await prisma.tuitionClass.update({
-      where: { id: req.admin.tuitionClassId },
+      where: { id: req.user.tenantId },
       data: { name: tuitionClassName, subject, classType },
     });
 

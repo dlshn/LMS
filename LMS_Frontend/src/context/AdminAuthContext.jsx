@@ -10,8 +10,9 @@ function loadAdminFromStorage() {
   const tuitionClassName = localStorage.getItem('tuitionClassName');
   const tuitionClassId = localStorage.getItem('tuitionClassId');
   const joinCode = localStorage.getItem('tuitionClassJoinCode');
+  const role = localStorage.getItem('adminRole');
   if (!accessToken) return null;
-  return { accessToken, adminName, tuitionClassName, tuitionClassId, joinCode };
+  return { accessToken, adminName, tuitionClassName, tuitionClassId, joinCode, role };
 }
 
 export function AdminAuthProvider({ children }) {
@@ -21,6 +22,7 @@ export function AdminAuthProvider({ children }) {
     localStorage.setItem('adminAccessToken', accessToken);
     localStorage.setItem('adminRefreshToken', refreshToken);
     localStorage.setItem('adminName', adminInfo.name);
+    if (adminInfo.role) localStorage.setItem('adminRole', adminInfo.role);
 
     // Both register and login now return tuitionClass directly; fall back
     // to the token payload for older cached sessions.
@@ -32,12 +34,14 @@ export function AdminAuthProvider({ children }) {
     if (tuitionClassName) localStorage.setItem('tuitionClassName', tuitionClassName);
     if (joinCode) localStorage.setItem('tuitionClassJoinCode', joinCode);
 
-    setAdmin({ accessToken, adminName: adminInfo.name, tuitionClassId, tuitionClassName, joinCode });
+    setAdmin({ accessToken, adminName: adminInfo.name, tuitionClassId, tuitionClassName, joinCode, role: adminInfo.role });
   }
 
+  // Registration doesn't log the teacher in: the class waits for super admin
+  // approval first, so there are no tokens to store yet.
   async function register(payload) {
     const { data } = await endpoints.registerAdmin(payload);
-    persist(data);
+    if (!data.pending) persist(data);
     return data;
   }
 
@@ -61,6 +65,7 @@ export function AdminAuthProvider({ children }) {
     localStorage.removeItem('adminAccessToken');
     localStorage.removeItem('adminRefreshToken');
     localStorage.removeItem('adminName');
+    localStorage.removeItem('adminRole');
     localStorage.removeItem('tuitionClassId');
     localStorage.removeItem('tuitionClassName');
     localStorage.removeItem('tuitionClassJoinCode');

@@ -1,11 +1,13 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAdminAuth } from '../../context/AdminAuthContext';
 import PublicNavbar from '../../components/PublicNavbar';
 
 export default function AdminLogin() {
   const { login } = useAdminAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const [notice] = useState(location.state?.notice || '');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -16,8 +18,8 @@ export default function AdminLogin() {
     setError('');
     setLoading(true);
     try {
-      await login({ email, password });
-      navigate('/admin/dashboard');
+      const data = await login({ email, password });
+      navigate(data.admin?.role === 'SUPER_ADMIN' ? '/super/classes' : '/admin/dashboard');
     } catch (err) {
       setError(err.response?.data?.error || 'Login failed. Check your email and password.');
     } finally {
@@ -33,6 +35,7 @@ export default function AdminLogin() {
         <span className="auth-eyebrow">Tuition admin</span>
         <h1>Log in</h1>
 
+        {notice && <div className="alert alert-success">{notice}</div>}
         {error && <div className="alert alert-error">{error}</div>}
 
         <form onSubmit={handleSubmit}>

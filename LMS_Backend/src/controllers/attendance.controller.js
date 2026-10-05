@@ -5,7 +5,7 @@ const prisma = require('../utils/prisma');
 // so the form can start blank/unmarked instead of defaulting to Present.
 async function getAttendanceForDate(req, res) {
   try {
-    const tuitionClassId = req.admin.tuitionClassId;
+    const tuitionClassId = req.user.tenantId;
     const { date } = req.query;
 
     if (!date) {
@@ -44,7 +44,7 @@ async function getAttendanceForDate(req, res) {
 // marking a real class of 20-30 students one at a time isn't practical.
 async function markBulkAttendance(req, res) {
   try {
-    const tuitionClassId = req.admin.tuitionClassId;
+    const tuitionClassId = req.user.tenantId;
     const { date, records } = req.body;
 
     if (!date || !Array.isArray(records) || records.length === 0) {
@@ -82,7 +82,7 @@ async function markBulkAttendance(req, res) {
 
 async function getStudentAttendance(req, res) {
   try {
-    const tuitionClassId = req.admin.tuitionClassId;
+    const tuitionClassId = req.user.tenantId;
     const { studentId } = req.params;
 
     const student = await prisma.student.findFirst({ where: { id: studentId, tuitionClassId } });
@@ -113,7 +113,7 @@ async function getStudentAttendance(req, res) {
 
 async function getMyAttendance(req, res) {
   try {
-    const studentId = req.student.studentId;
+    const studentId = req.user.id;
 
     const records = await prisma.attendance.findMany({
       where: { studentId },

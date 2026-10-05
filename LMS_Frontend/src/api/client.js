@@ -35,7 +35,7 @@ const SESSION = {
     accessKey: 'adminAccessToken',
     refreshKey: 'adminRefreshToken',
     loginPath: '/admin/login',
-    extraKeys: ['adminName', 'tuitionClassId', 'tuitionClassName', 'tuitionClassJoinCode'],
+    extraKeys: ['adminName', 'adminRole', 'tuitionClassId', 'tuitionClassName', 'tuitionClassJoinCode'],
   },
   student: {
     accessKey: 'studentAccessToken',

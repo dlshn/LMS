@@ -12,7 +12,7 @@ async function registerStudent(req, res) {
       return res.status(400).json({ error: 'studentNumber and fullName are required' });
     }
 
-    const tuitionClassId = req.admin.tuitionClassId;
+    const tuitionClassId = req.user.tenantId;
 
     const existingNumber = await prisma.student.findUnique({ where: { studentNumber } });
     if (existingNumber) {
@@ -44,7 +44,7 @@ async function registerStudent(req, res) {
 
 async function getAllStudents(req, res) {
   try {
-    const tuitionClassId = req.admin.tuitionClassId;
+    const tuitionClassId = req.user.tenantId;
 
     const students = await prisma.student.findMany({
       where: { tuitionClassId },
@@ -71,7 +71,7 @@ async function getAllStudents(req, res) {
 
 async function getStudentById(req, res) {
   try {
-    const tuitionClassId = req.admin.tuitionClassId;
+    const tuitionClassId = req.user.tenantId;
     const { id } = req.params;
 
     const student = await prisma.student.findFirst({
@@ -102,7 +102,7 @@ async function getStudentById(req, res) {
 
 async function updateStudent(req, res) {
   try {
-    const tuitionClassId = req.admin.tuitionClassId;
+    const tuitionClassId = req.user.tenantId;
     const { id } = req.params;
     const { fullName, school, phone, parentPhone } = req.body;
 
@@ -135,7 +135,7 @@ async function updateStudent(req, res) {
 
 async function deleteStudent(req, res) {
   try {
-    const tuitionClassId = req.admin.tuitionClassId;
+    const tuitionClassId = req.user.tenantId;
     const { id } = req.params;
 
     const student = await prisma.student.findFirst({ where: { id, tuitionClassId } });
@@ -160,7 +160,7 @@ async function deleteStudent(req, res) {
 // tuition class's name, neither of which the login/results endpoints return.
 async function getMyProfile(req, res) {
   try {
-    const studentId = req.student.studentId;
+    const studentId = req.user.id;
 
     const student = await prisma.student.findUnique({
       where: { id: studentId },

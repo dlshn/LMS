@@ -1829,3 +1829,5 @@ button, input, select, textarea {
 
   .marks-input { width: 100px; }
 }
+
+.row-actions { display: flex; gap: 8px; flex-wrap: wrap; }

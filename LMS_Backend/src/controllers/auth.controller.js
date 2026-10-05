@@ -6,6 +6,22 @@ const jwt = require('jsonwebtoken');
 
 const MIN_PASSWORD_LENGTH = 6;
 
+// Every token carries the same claims (see middleware/auth.middleware.js):
+// sub = principal id, role = ADMIN | SUPER_ADMIN | STUDENT, tenantId = class id.
+function issueTokens({ id, role, tenantId }) {
+  const payload = { sub: id, role, tenantId: tenantId ?? null };
+  return {
+    accessToken: generateAccessToken(payload),
+    refreshToken: generateRefreshToken(payload),
+  };
+}
+
+// A teacher's class must be approved by the super admin before they can use
+// it. Super admins are the platform operators and are never gated.
+function canAdminLogin(admin) {
+  return admin.role === 'SUPER_ADMIN' || admin.tuitionClass?.isApproved === true;
+}
+
 // Join codes are short and random, so a collision is very unlikely but not
 // impossible — retry a few times against the unique constraint before
 // giving up.
@@ -56,22 +72,13 @@ async function registerAdmin(req, res) {
       },
     });
 
-    const payload = { adminId: admin.id, tuitionClassId: tuitionClass.id, role: admin.role };
-    const accessToken = generateAccessToken(payload);
-    const refreshToken = generateRefreshToken(payload);
-
+    // The class starts unapproved (isApproved defaults to false). No tokens are
+    // issued here — the teacher can log in only after a super admin approves it.
     res.status(201).json({
-      message: 'Tuition class registered successfully',
-      admin: { id: admin.id, name: admin.name, email: admin.email, phone: admin.phone },
-      tuitionClass: {
-        id: tuitionClass.id,
-        name: tuitionClass.name,
-        subject: tuitionClass.subject,
-        classType: tuitionClass.classType,
-        joinCode: tuitionClass.joinCode,
-      },
-      accessToken,
-      refreshToken,
+      pending: true,
+      message: 'Registration received. Your class will be active once the platform admin approves it.',
+      admin: { id: admin.id, name: admin.name, email: admin.email },
+      tuitionClass: { id: tuitionClass.id, name: tuitionClass.name },
     });
   } catch (error) {
     console.error(error);
@@ -97,13 +104,18 @@ async function loginAdmin(req, res) {
       return res.status(401).json({ error: 'Invalid email or password' });
     }
 
-    const payload = { adminId: admin.id, tuitionClassId: admin.tuitionClassId, role: admin.role };
-    const accessToken = generateAccessToken(payload);
-    const refreshToken = generateRefreshToken(payload);
+    if (!canAdminLogin(admin)) {
+      return res.status(403).json({
+        code: 'PENDING_APPROVAL',
+        error: 'Your class is waiting for approval. You can log in once the platform admin approves it.',
+      });
+    }
+
+    const { accessToken, refreshToken } = issueTokens({ id: admin.id, role: admin.role, tenantId: admin.tuitionClassId });
 
     res.json({
       message: 'Login successful',
-      admin: { id: admin.id, name: admin.name, email: admin.email },
+      admin: { id: admin.id, name: admin.name, email: admin.email, role: admin.role },
       tuitionClass: admin.tuitionClass
         ? { id: admin.tuitionClass.id, name: admin.tuitionClass.name, joinCode: admin.tuitionClass.joinCode }
         : null,
@@ -137,6 +149,9 @@ async function registerStudentSelf(req, res) {
     if (!tuitionClass) {
       return res.status(404).json({ error: 'Invalid class join code' });
     }
+    if (!tuitionClass.isApproved) {
+      return res.status(403).json({ code: 'PENDING_APPROVAL', error: 'This class is not active yet. Please try again once it has been approved.' });
+    }
 
     const student = await prisma.student.findUnique({ where: { studentNumber } });
     if (!student || student.tuitionClassId !== tuitionClass.id) {
@@ -166,9 +181,7 @@ async function registerStudentSelf(req, res) {
       },
     });
 
-    const payload = { studentId: updated.id, tuitionClassId: updated.tuitionClassId, type: 'student' };
-    const accessToken = generateAccessToken(payload);
-    const refreshToken = generateRefreshToken(payload);
+    const { accessToken, refreshToken } = issueTokens({ id: updated.id, role: 'STUDENT', tenantId: updated.tuitionClassId });
 
     res.status(201).json({
       message: 'Registration complete',
@@ -200,9 +213,7 @@ async function loginStudent(req, res) {
       return res.status(401).json({ error: 'Invalid username or password' });
     }
 
-    const payload = { studentId: student.id, tuitionClassId: student.tuitionClassId, type: 'student' };
-    const accessToken = generateAccessToken(payload);
-    const refreshToken = generateRefreshToken(payload);
+    const { accessToken, refreshToken } = issueTokens({ id: student.id, role: 'STUDENT', tenantId: student.tuitionClassId });
 
     res.json({
       message: 'Login successful',
@@ -231,11 +242,24 @@ async function refreshToken(req, res) {
       return res.status(401).json({ error: 'Invalid or expired refresh token' });
     }
 
-    const payload = decoded.type === 'student'
-      ? { studentId: decoded.studentId, tuitionClassId: decoded.tuitionClassId, type: 'student' }
-      : { adminId: decoded.adminId, tuitionClassId: decoded.tuitionClassId, role: decoded.role };
+    // Re-read the account instead of copying claims forward, so a rejected
+    // class or deleted account stops getting new access tokens.
+    const expired = () => res.status(401).json({ error: 'Session is no longer valid. Please log in again.' });
 
-    const newAccessToken = generateAccessToken(payload);
+    if (!decoded.sub || !decoded.role) return expired();
+
+    let principal;
+    if (decoded.role === 'STUDENT') {
+      const student = await prisma.student.findUnique({ where: { id: decoded.sub } });
+      if (!student) return expired();
+      principal = { id: student.id, role: 'STUDENT', tenantId: student.tuitionClassId };
+    } else {
+      const admin = await prisma.admin.findUnique({ where: { id: decoded.sub }, include: { tuitionClass: true } });
+      if (!admin || !canAdminLogin(admin)) return expired();
+      principal = { id: admin.id, role: admin.role, tenantId: admin.tuitionClassId };
+    }
+
+    const { accessToken: newAccessToken } = issueTokens(principal);
 
     res.json({ accessToken: newAccessToken });
   } catch (error) {

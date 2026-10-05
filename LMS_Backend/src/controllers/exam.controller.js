@@ -2,7 +2,7 @@ const prisma = require('../utils/prisma');
 
 async function createExam(req, res) {
   try {
-    const tuitionClassId = req.admin.tuitionClassId;
+    const tuitionClassId = req.user.tenantId;
     const { title, examDate, description, maxMarks } = req.body;
 
     if (!title || !examDate || !maxMarks) {
@@ -36,7 +36,7 @@ async function createExam(req, res) {
 
 async function getAllExams(req, res) {
   try {
-    const tuitionClassId = req.admin.tuitionClassId;
+    const tuitionClassId = req.user.tenantId;
 
     const exams = await prisma.exam.findMany({
       where: { tuitionClassId },
@@ -52,7 +52,7 @@ async function getAllExams(req, res) {
 
 async function updateExam(req, res) {
   try {
-    const tuitionClassId = req.admin.tuitionClassId;
+    const tuitionClassId = req.user.tenantId;
     const { id } = req.params;
     const { title, examDate, description, maxMarks } = req.body;
 
@@ -84,7 +84,7 @@ async function updateExam(req, res) {
 
 async function publishExam(req, res) {
   try {
-    const tuitionClassId = req.admin.tuitionClassId;
+    const tuitionClassId = req.user.tenantId;
     const { id } = req.params;
 
     const exam = await prisma.exam.findFirst({ where: { id, tuitionClassId } });
@@ -106,7 +106,7 @@ async function publishExam(req, res) {
 
 async function deleteExam(req, res) {
   try {
-    const tuitionClassId = req.admin.tuitionClassId;
+    const tuitionClassId = req.user.tenantId;
     const { id } = req.params;
 
     const exam = await prisma.exam.findFirst({ where: { id, tuitionClassId } });
