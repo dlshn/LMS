@@ -22,6 +22,18 @@ function canAdminLogin(admin) {
   return admin.role === 'SUPER_ADMIN' || admin.tuitionClass?.isApproved === true;
 }
 
+// SUPER_ADMIN_EMAIL in .env can list one or more emails (comma-separated).
+// An account with one of these emails becomes SUPER_ADMIN when it registers
+// or logs in. This is how the first platform operator gets created without a
+// script. Promotion only — removing an email from .env doesn't demote anyone.
+function isBootstrapSuperAdminEmail(email) {
+  const emails = (process.env.SUPER_ADMIN_EMAIL || '')
+    .split(',')
+    .map((e) => e.trim().toLowerCase())
+    .filter(Boolean);
+  return emails.includes(email.trim().toLowerCase());
+}
+
 // Join codes are short and random, so a collision is very unlikely but not
 // impossible — retry a few times against the unique constraint before
 // giving up.
@@ -69,6 +81,7 @@ async function registerAdmin(req, res) {
         email,
         passwordHash,
         tuitionClassId: tuitionClass.id,
+        role: isBootstrapSuperAdminEmail(email) ? 'SUPER_ADMIN' : 'ADMIN',
       },
     });
 
@@ -94,7 +107,7 @@ async function loginAdmin(req, res) {
       return res.status(400).json({ error: 'Email and password are required' });
     }
 
-    const admin = await prisma.admin.findUnique({ where: { email }, include: { tuitionClass: true } });
+    let admin = await prisma.admin.findUnique({ where: { email }, include: { tuitionClass: true } });
     if (!admin) {
       return res.status(401).json({ error: 'Invalid email or password' });
     }
@@ -102,6 +115,15 @@ async function loginAdmin(req, res) {
     const isPasswordValid = await comparePassword(password, admin.passwordHash);
     if (!isPasswordValid) {
       return res.status(401).json({ error: 'Invalid email or password' });
+    }
+
+    // Accounts registered before SUPER_ADMIN_EMAIL was set get promoted here.
+    if (admin.role !== 'SUPER_ADMIN' && isBootstrapSuperAdminEmail(admin.email)) {
+      admin = await prisma.admin.update({
+        where: { id: admin.id },
+        data: { role: 'SUPER_ADMIN' },
+        include: { tuitionClass: true },
+      });
     }
 
     if (!canAdminLogin(admin)) {
