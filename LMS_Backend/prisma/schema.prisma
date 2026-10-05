@@ -35,6 +35,7 @@ model TuitionClass {
   classType      ClassType @default(PHYSICAL)
   joinCode       String    @unique
   isApproved     Boolean   @default(false)
+  isSuspended    Boolean   @default(false)
   posterImageKey String?
   posterImageUrl String?
   createdAt      DateTime  @default(now())

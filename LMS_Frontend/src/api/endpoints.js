@@ -83,9 +83,12 @@ export const uploadPoster = (formData) =>
 export const deletePoster = () => api.delete('/api/poster');
 
 // --- Platform admin (SUPER_ADMIN only) ---
-export const getPendingClasses = () => api.get('/api/super/classes/pending');
+export const getSuperClasses = (status) => api.get('/api/super/classes', { params: { status } });
 export const approveClass = (id) => api.post(`/api/super/classes/${id}/approve`);
+export const suspendClass = (id) => api.post(`/api/super/classes/${id}/suspend`);
+export const reactivateClass = (id) => api.post(`/api/super/classes/${id}/reactivate`);
 export const rejectClass = (id) => api.post(`/api/super/classes/${id}/reject`);
+export const deleteClass = (id, confirmName) => api.delete(`/api/super/classes/${id}`, { data: { confirmName } });
 
 // --- Settings (admin) ---
 export const getSettings = () => api.get('/api/settings');

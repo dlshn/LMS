@@ -16,7 +16,7 @@ import Notes from './pages/admin/Notes';
 import Notices from './pages/admin/Notices';
 import Recordings from './pages/admin/Recordings';
 import Settings from './pages/admin/Settings';
-import PendingClasses from './pages/super/PendingClasses';
+import ClassManagement from './pages/super/ClassManagement';
 import SuperAdminRoute from './components/SuperAdminRoute';
 
 import StudentLogin from './pages/student/Login';
@@ -123,7 +123,7 @@ export default function App() {
               path="/super/classes"
               element={
                 <SuperAdminRoute>
-                  <PendingClasses />
+                  <ClassManagement />
                 </SuperAdminRoute>
               }
             />

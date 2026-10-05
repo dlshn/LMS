@@ -16,22 +16,14 @@ function issueTokens({ id, role, tenantId }) {
   };
 }
 
-// A teacher's class must be approved by the super admin before they can use
-// it. Super admins are the platform operators and are never gated.
-function canAdminLogin(admin) {
-  return admin.role === 'SUPER_ADMIN' || admin.tuitionClass?.isApproved === true;
+// A class is usable only after the super admin approves it, and only while it
+// is not suspended. Super admins are platform operators and are never gated.
+function isClassActive(tuitionClass) {
+  return tuitionClass?.isApproved === true && tuitionClass?.isSuspended !== true;
 }
 
-// SUPER_ADMIN_EMAIL in .env can list one or more emails (comma-separated).
-// An account with one of these emails becomes SUPER_ADMIN when it registers
-// or logs in. This is how the first platform operator gets created without a
-// script. Promotion only — removing an email from .env doesn't demote anyone.
-function isBootstrapSuperAdminEmail(email) {
-  const emails = (process.env.SUPER_ADMIN_EMAIL || '')
-    .split(',')
-    .map((e) => e.trim().toLowerCase())
-    .filter(Boolean);
-  return emails.includes(email.trim().toLowerCase());
+function canAdminLogin(admin) {
+  return admin.role === 'SUPER_ADMIN' || isClassActive(admin.tuitionClass);
 }
 
 // Join codes are short and random, so a collision is very unlikely but not
@@ -81,7 +73,6 @@ async function registerAdmin(req, res) {
         email,
         passwordHash,
         tuitionClassId: tuitionClass.id,
-        role: isBootstrapSuperAdminEmail(email) ? 'SUPER_ADMIN' : 'ADMIN',
       },
     });
 
@@ -107,7 +98,7 @@ async function loginAdmin(req, res) {
       return res.status(400).json({ error: 'Email and password are required' });
     }
 
-    let admin = await prisma.admin.findUnique({ where: { email }, include: { tuitionClass: true } });
+    const admin = await prisma.admin.findUnique({ where: { email }, include: { tuitionClass: true } });
     if (!admin) {
       return res.status(401).json({ error: 'Invalid email or password' });
     }
@@ -117,16 +108,13 @@ async function loginAdmin(req, res) {
       return res.status(401).json({ error: 'Invalid email or password' });
     }
 
-    // Accounts registered before SUPER_ADMIN_EMAIL was set get promoted here.
-    if (admin.role !== 'SUPER_ADMIN' && isBootstrapSuperAdminEmail(admin.email)) {
-      admin = await prisma.admin.update({
-        where: { id: admin.id },
-        data: { role: 'SUPER_ADMIN' },
-        include: { tuitionClass: true },
-      });
-    }
-
     if (!canAdminLogin(admin)) {
+      if (admin.tuitionClass?.isSuspended) {
+        return res.status(403).json({
+          code: 'SUSPENDED',
+          error: 'This class has been suspended. Please contact the platform admin.',
+        });
+      }
       return res.status(403).json({
         code: 'PENDING_APPROVAL',
         error: 'Your class is waiting for approval. You can log in once the platform admin approves it.',
@@ -171,8 +159,8 @@ async function registerStudentSelf(req, res) {
     if (!tuitionClass) {
       return res.status(404).json({ error: 'Invalid class join code' });
     }
-    if (!tuitionClass.isApproved) {
-      return res.status(403).json({ code: 'PENDING_APPROVAL', error: 'This class is not active yet. Please try again once it has been approved.' });
+    if (!isClassActive(tuitionClass)) {
+      return res.status(403).json({ code: 'CLASS_INACTIVE', error: 'This class is not active right now. Please contact your teacher.' });
     }
 
     const student = await prisma.student.findUnique({ where: { studentNumber } });
@@ -225,7 +213,7 @@ async function loginStudent(req, res) {
       return res.status(400).json({ error: 'Username and password are required' });
     }
 
-    const student = await prisma.student.findUnique({ where: { username } });
+    const student = await prisma.student.findUnique({ where: { username }, include: { tuitionClass: true } });
     if (!student || !student.passwordHash) {
       return res.status(401).json({ error: 'Invalid username or password' });
     }
@@ -233,6 +221,10 @@ async function loginStudent(req, res) {
     const isPasswordValid = await comparePassword(password, student.passwordHash);
     if (!isPasswordValid) {
       return res.status(401).json({ error: 'Invalid username or password' });
+    }
+
+    if (!isClassActive(student.tuitionClass)) {
+      return res.status(403).json({ code: 'CLASS_INACTIVE', error: 'This class is not active right now. Please contact your teacher.' });
     }
 
     const { accessToken, refreshToken } = issueTokens({ id: student.id, role: 'STUDENT', tenantId: student.tuitionClassId });
@@ -272,8 +264,8 @@ async function refreshToken(req, res) {
 
     let principal;
     if (decoded.role === 'STUDENT') {
-      const student = await prisma.student.findUnique({ where: { id: decoded.sub } });
-      if (!student) return expired();
+      const student = await prisma.student.findUnique({ where: { id: decoded.sub }, include: { tuitionClass: true } });
+      if (!student || !isClassActive(student.tuitionClass)) return expired();
       principal = { id: student.id, role: 'STUDENT', tenantId: student.tuitionClassId };
     } else {
       const admin = await prisma.admin.findUnique({ where: { id: decoded.sub }, include: { tuitionClass: true } });
