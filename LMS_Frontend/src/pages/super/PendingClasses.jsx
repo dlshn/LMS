@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { useAdminAuth } from '../../context/AdminAuthContext';
 import { useConfirm } from '../../context/ConfirmDialogContext';
 import * as endpoints from '../../api/endpoints';
@@ -73,6 +73,7 @@ export default function PendingClasses() {
           </div>
         </div>
         <nav className="topbar-nav open">
+          <NavLink to="/admin/dashboard">My class</NavLink>
           <button className="topbar-logout-btn" onClick={handleLogout}>Log out</button>
         </nav>
       </div>
